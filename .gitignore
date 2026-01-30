@@ -34,6 +34,7 @@ checkpoints_science/
 checkpoints_science_gpu/
 
 # Large Data & Outputs
+output_extraction/
 science-problem-dataset-builder/output/
 science-problem-dataset-builder/training_data/
 handwriting-remover/data/input/

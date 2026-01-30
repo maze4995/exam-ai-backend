@@ -5,9 +5,10 @@ import numpy as np
 import os
 import google.generativeai as genai
 from PIL import Image
+from utils import strict_json_parse
 
 # --- Configuration ---
-INPUT_FILE = r"C:\Users\rlgus\Desktop\Hyun&Hyun\문제집 - 과학\내신\시험지 모음\1학기 기말고사\2025 고1 통합과학 1학기 기말고사 계남고.pdf"
+TARGET_DIR = r"C:\Users\rlgus\Desktop\Hyun&Hyun\문제집 - 과학\내신\시험지 모음\1학기 기말고사"
 OUTPUT_DIR = "output_extraction"
 API_KEY = "AIzaSyALdvzQFlAU9L11iEX9bA6VPK3ovHKh8Xg"
 
@@ -19,63 +20,13 @@ def setup_directories():
         os.makedirs(OUTPUT_DIR)
         print(f"Created output directory: {OUTPUT_DIR}")
 
-def pdf_to_images(pdf_path):
-    print(f"Opening PDF: {pdf_path}")
-    doc = fitz.open(pdf_path)
-    images = []
-    
-    # Process first 3 pages for prototype
-    for page_num in range(min(3, len(doc))):
-        page = doc[page_num]
-        pix = page.get_pixmap(dpi=300) # High DPI for better OCR
-        img_path = os.path.join(OUTPUT_DIR, f"page_{page_num+1}.png")
-        pix.save(img_path)
-        images.append(img_path)
-        print(f"Saved page {page_num+1} to {img_path}")
-        
-    return images
-
-def remove_red_handwriting(image_path):
-    print(f"Processing image for red handwriting removal: {image_path}")
-    # Read image
-    img = cv2.imread(image_path)
-    if img is None:
-        print(f"Error reading image: {image_path}")
-        return None
-    
-    # Convert to HSV
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    
-    # Define range for red color
-    lower_red1 = np.array([0, 70, 50])
-    upper_red1 = np.array([10, 255, 255])
-    lower_red2 = np.array([170, 70, 50])
-    upper_red2 = np.array([180, 255, 255])
-    
-    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
-    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
-    mask = mask1 + mask2
-    
-    # Inpaint
-    clean_img = cv2.inpaint(img, mask, 3, cv2.INPAINT_NS)
-    
-    base_name = os.path.basename(image_path)
-    clean_path = os.path.join(OUTPUT_DIR, f"clean_{base_name}")
-    cv2.imwrite(clean_path, clean_img)
-    return clean_path
-
 def extract_content_with_vlm(image_path):
-    print(f"Sending {image_path} to Gemini VLM...")
-    
+    # print(f"Sending {image_path} to Gemini VLM...")
     try:
         pil_img = Image.open(image_path)
-        # Using gemini-1.5-pro or similar might be better for coordinate accuracy, 
-        # but let's try flash-latest first as requested.
-        model = genai.GenerativeModel('gemini-1.5-flash') 
-        # Note: 1.5-flash is generally good at spatial reasoning. 
-        # Let's use the model that worked: gemini-flash-latest or gemini-2.0-flash (if quota allows).
-        # User had success with gemini-flash-latest.
-        model = genai.GenerativeModel('gemini-flash-latest')
+        model = genai.GenerativeModel('gemini-flash-latest') 
+        # Using gemini-flash-latest might be more stable in some regions
+        # model = genai.GenerativeModel('gemini-flash-latest')
 
         prompt = """
         이 이미지에서 각 '시험 문제'의 영역을 찾아서 텍스트와 좌표를 추출해줘.
@@ -101,20 +52,21 @@ def extract_content_with_vlm(image_path):
     except Exception as e:
         return f"Error during VLM extraction: {e}"
 
-from utils import strict_json_parse
-
-def crop_and_save_problems(image_path, extraction_result):
+def crop_and_save_exam_problems(image_path, extraction_result, output_base):
     problems = strict_json_parse(extraction_result)
-        
     if not problems:
-        print(f"Failed to parse JSON for {image_path}")
+        print(f"No problems parsed for {image_path}")
         return
 
-    img = Image.open(image_path)
-    width, height = img.size
+    try:
+        img = Image.open(image_path)
+        width, height = img.size
+    except Exception as e:
+        print(f"Error opening image for cropping: {e}")
+        return
     
-    base_name = os.path.basename(image_path).replace(".png", "")
-    crop_dir = os.path.join(OUTPUT_DIR, f"crops_{base_name}")
+    page_bs = os.path.splitext(os.path.basename(image_path))[0] # page_1
+    crop_dir = os.path.join(output_base, f"crops_{page_bs}")
     if not os.path.exists(crop_dir):
         os.makedirs(crop_dir)
         
@@ -125,58 +77,91 @@ def crop_and_save_problems(image_path, extraction_result):
         q_num = prob.get("question_number", "unknown")
         ymin, xmin, ymax, xmax = prob["box_2d"]
         
-        # Convert 1000-scale coordinates to pixels
-        left = (xmin / 1000) * width
-        top = (ymin / 1000) * height
-        right = (xmax / 1000) * width
-        bottom = (ymax / 1000) * height
+        # Convert 1000-scale to pixels with some padding
+        left = max(0, (xmin / 1000) * width - 10)
+        top = max(0, (ymin / 1000) * height - 10)
+        right = min(width, (xmax / 1000) * width + 10)
+        bottom = min(height, (ymax / 1000) * height + 10)
         
-        # Add padding (optional)
-        padding = 10
-        left = max(0, left - padding)
-        top = max(0, top - padding)
-        right = min(width, right + padding)
-        bottom = min(height, bottom + padding)
+        try:
+            crop = img.crop((left, top, right, bottom))
+            crop_path = os.path.join(crop_dir, f"q_{q_num}.png")
+            crop.save(crop_path)
+        except Exception as e:
+            print(f"Crop error for Q{q_num}: {e}")
+
+def process_pdf(pdf_path):
+    print(f"\n--- Processing: {os.path.basename(pdf_path)} ---")
+    pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
+    
+    exam_output_dir = os.path.join(OUTPUT_DIR, pdf_name)
+    if not os.path.exists(exam_output_dir):
+        os.makedirs(exam_output_dir)
+    
+    try:
+        doc = fitz.open(pdf_path)
+    except Exception as e:
+        print(f"Error opening PDF: {e}")
+        return
+
+    # Convert PDF to images
+    image_paths = []
+    for page_num in range(len(doc)):
+        img_filename = f"page_{page_num+1}.png"
+        img_path = os.path.join(exam_output_dir, img_filename)
         
-        crop = img.crop((left, top, right, bottom))
-        crop_path = os.path.join(crop_dir, f"q_{q_num}.png")
-        crop.save(crop_path)
-        print(f"Saved crop: {crop_path}")
+        if not os.path.exists(img_path):
+            page = doc[page_num]
+            pix = page.get_pixmap(dpi=300)
+            pix.save(img_path)
+        
+        image_paths.append(img_path)
+    
+    print(f"Total pages: {len(image_paths)}")
+    
+    import time
+    # Skip cover page if it has many pages
+    start_index = 1 if len(image_paths) > 2 else 0
+    
+    for i in range(start_index, len(image_paths)):
+        img_path = image_paths[i]
+        json_filename = f"extracted_{os.path.basename(img_path)}.json"
+        json_path = os.path.join(exam_output_dir, json_filename)
+        
+        if os.path.exists(json_path):
+            # Check if crops also exist? Assume yes for now or re-run if json exists
+            # To be thorough, we could re-run cropping if the crops folder is missing.
+            print(f"Skipping extraction for {os.path.basename(img_path)} (JSON exists)")
+            continue
+            
+        print(f"Processing Page {i+1}/{len(image_paths)}...")
+        result = extract_content_with_vlm(img_path)
+        
+        with open(json_path, "w", encoding="utf-8") as f:
+            f.write(result)
+            
+        crop_and_save_exam_problems(img_path, result, exam_output_dir)
+        
+        # Rate limit handling (free tier usually has small RPM)
+        print("Waiting 35s for rate limit...")
+        time.sleep(35)
+        
+    doc.close()
 
 def main():
     setup_directories()
     
-    # Step 1: Check if images exist
-    image_paths = [os.path.join(OUTPUT_DIR, f"page_{i+1}.png") for i in range(3)]
-    if not all(os.path.exists(p) for p in image_paths):
-         image_paths = pdf_to_images(INPUT_FILE)
-    else:
-        print("Using existing images from output_extraction/")
-
-    # Step 2: VLM Extraction & Cropping
-    import time
-    print("\n--- Starting AI Extraction with Cropping ---")
+    if not os.path.exists(TARGET_DIR):
+        print(f"Target directory not found: {TARGET_DIR}")
+        return
+        
+    pdf_files = [f for f in os.listdir(TARGET_DIR) if f.lower().endswith('.pdf')]
+    print(f"Found {len(pdf_files)} PDF files in {TARGET_DIR}")
     
-    # Only process Page 2 and 3 because Page 1 is cover
-    target_pages = image_paths[1:] 
-    
-    for img_path in target_pages:
-        result = extract_content_with_vlm(img_path)
-        
-        # Save raw text result
-        base_name = os.path.basename(img_path)
-        txt_path = os.path.join(OUTPUT_DIR, f"extracted_v2_{base_name}.json")
-        with open(txt_path, "w", encoding="utf-8") as f:
-            f.write(result)
-        print(f"Saved extraction result to {txt_path}")
-        
-        # Crop images
-        crop_and_save_problems(img_path, result)
-        
-        print("Waiting 35 seconds to respect API rate limits...")
-        time.sleep(35)
-        
-    print("\n--- Phase 2 Complete ---")
+    for i, pdf_file in enumerate(pdf_files):
+        pdf_path = os.path.join(TARGET_DIR, pdf_file)
+        print(f"\n[Exam {i+1}/{len(pdf_files)}]")
+        process_pdf(pdf_path)
 
 if __name__ == "__main__":
     main()
