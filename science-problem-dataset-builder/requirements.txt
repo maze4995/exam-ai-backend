@@ -1,0 +1,7 @@
+ultralytics
+pdfplumber
+Pillow
+PyQt5
+lxml
+fastapi
+uvicorn

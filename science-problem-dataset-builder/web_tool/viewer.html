@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Problem Dataset Viewer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #f5f5f5;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        .problem-item {
+            padding: 15px;
+            border-bottom: 1px solid #34495e;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .problem-item:hover {
+            background-color: #34495e;
+        }
+
+        .problem-item.active {
+            background-color: #1abc9c;
+            font-weight: bold;
+        }
+
+        #main {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            overflow: hidden;
+            /* Prevent main scroll */
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        #data-panel {
+            flex: 0 0 500px;
+            /* Fixed width for text panel */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            /* Independent scroll */
+            height: 100%;
+        }
+
+        #image-panel {
+            flex: 1;
+            /* Take remaining space */
+            text-align: center;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #1abc9c;
+            padding-bottom: 10px;
+        }
+
+        .field-label {
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .field-content {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            white-space: pre-wrap;
+        }
+
+        .badge {
+            background: #95a5a6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar">
+        <div style="padding: 20px; font-size: 1.2em; font-weight: bold; background: #1a252f;">Dataset Viewer</div>
+        <div id="problem-list">
+            <!-- List Items -->
+        </div>
+    </div>
+
+    <div id="main">
+        <div id="data-panel" class="card">
+            <h2 id="view-id">Problem #</h2>
+
+            <div>
+                <div class="field-label">HEADER</div>
+                <div id="view-header" class="field-content"></div>
+            </div>
+
+            <div>
+                <div class="field-label">SCENARIO (발문)</div>
+                <div id="view-scenario" class="field-content"></div>
+            </div>
+
+            <div>
+                <div class="field-label">DIRECTIVE (질문)</div>
+                <div id="view-directive" class="field-content"></div>
+            </div>
+
+            <div>
+                <div class="field-label">PROPOSITIONS (보기)</div>
+                <div id="view-propositions" class="field-content"></div>
+            </div>
+
+            <div>
+                <div class="field-label">OPTIONS (선지)</div>
+                <div id="view-options" class="field-content"></div>
+            </div>
+
+            <div>
+                <div class="field-label">RAW JSON</div>
+                <pre id="view-json" style="font-size: 0.8em; color: #666; max-height: 100px; overflow: auto;"></pre>
+            </div>
+        </div>
+
+        <div id="image-panel">
+            <img id="view-image" src="" alt="Problem Image" />
+        </div>
+    </div>
+
+    <script>
+        let problems = [];
+
+        async function loadData() {
+            try {
+                const response = await fetch('/data/dataset.json');
+                problems = await response.json();
+                renderList();
+                if (problems.length > 0) loadProblem(0);
+            } catch (e) {
+                alert("Failed to load dataset.json: " + e);
+            }
+        }
+
+        function renderList() {
+            const list = document.getElementById('problem-list');
+            list.innerHTML = '';
+            problems.forEach((p, index) => {
+                const item = document.createElement('div');
+                item.className = 'problem-item';
+                item.innerText = `No. ${p.id} (p.${p.page})`;
+                item.onclick = () => loadProblem(index);
+                list.appendChild(item);
+            });
+        }
+
+        function loadProblem(index) {
+            const p = problems[index];
+            const content = p.content;
+
+            // Update Sidebar Active State
+            document.querySelectorAll('.problem-item').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+            });
+
+            document.getElementById('view-id').innerText = `Problem #${p.id} (Page ${p.page})`;
+
+            document.getElementById('view-header').innerText = content.header || '-';
+            document.getElementById('view-scenario').innerText = content.scenario || '-';
+            document.getElementById('view-directive').innerText = content.directive || '-';
+            document.getElementById('view-propositions').innerText = content.propositions || '-';
+
+            document.getElementById('view-options').innerHTML = content.options.length
+                ? content.options.map(o => `<div>${o}</div>`).join('')
+                : '<span style="color:#ccc">None</span>';
+
+            document.getElementById('view-json').innerText = JSON.stringify(p, null, 2);
+
+            // Image
+            const img = document.getElementById('view-image');
+            if (content.visuals && content.visuals.length > 0) {
+                img.src = `/data/images/${content.visuals[0]}`;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+        }
+
+        loadData();
+    </script>
+
+</body>
+
+</html>

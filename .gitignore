@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Pytorch Models & Checkpoints
+*.pth
+*.pt
+checkpoints/
+checkpoints_science/
+checkpoints_science_gpu/
+
+# Large Data & Outputs
+science-problem-dataset-builder/output/
+science-problem-dataset-builder/training_data/
+handwriting-remover/data/input/
+handwriting-remover/data/output/
+
+# Images & PDFs
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# IDE settings
+.vscode/
+.idea/
