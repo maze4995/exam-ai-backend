@@ -57,10 +57,42 @@ cd handwriting-remover
 python inference.py --input "path/to/image.png" --output "result.png"
 ```
 
+---
+
+## 🏗️ Science Problem Dataset Builder (과학 문제 데이터셋 도구)
+
+이 도구는 PDF 파일에서 문제 영역을 자동으로 추출하고 라벨링하여 딥러닝 학습용 데이터를 구축하는 보조 프로그램입니다.
+
+### 주요 기능
+*   **PDF 파싱**: PDF 문서 구조 분석 (`src/parser.py`)
+*   **AI 문제 추출**: YOLO 모델을 사용하여 문제/해설 영역 자동 탐지 (`src/test_ai_extraction.py`)
+*   **데이터셋 생성**: 탐지된 영역을 이미지로 저장하고 학습 라벨(txt, xml) 생성
+
+### 사용 방법
+1.  `science-problem-dataset-builder` 폴더로 이동합니다.
+2.  별도의 가상환경을 설정합니다 (Python 3.8+ 권장).
+    ```powershell
+    cd science-problem-dataset-builder
+    python -m venv venv
+    venv\Scripts\activate
+    pip install -r requirements.txt
+    ```
+3.  `input` 폴더에 PDF 파일을 넣습니다.
+4.  추출 실행:
+    ```powershell
+    python src/test_ai_extraction.py
+    ```
+5.  결과 확인: `output/gallery_test.html`을 브라우저로 엽니다.
+
+---
+
 ## 📂 디렉토리 구조
 *   `handwriting-remover/`: 필기 제거 모델 소스 코드
     *   `data/`: 데이터셋 로더 및 합성 스크립트
     *   `models/`: 모델 아키텍처 정의 (UNet 등)
     *   `train.py`: 학습 실행 파일
     *   `inference.py`: 추론 실행 파일
-*   `science-problem-dataset-builder/`: 과학 문제 데이터셋 구축 도구 (별도 프로젝트)
+*   `science-problem-dataset-builder/`: 과학 문제 데이터셋 구축 도구
+    *   `src/`: 핵심 로직 (파서, 변환기)
+    *   `web_tool/`: 결과 확인용 웹 뷰어
+    *   `input/`, `output/`: 데이터 입출력 폴더
