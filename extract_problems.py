@@ -31,22 +31,29 @@ def extract_content_with_vlm(image_path):
             model = genai.GenerativeModel('gemini-3-flash-preview') 
 
             prompt = """
-            이 이미지에서 각 '시험 문제'의 영역을 찾아서 텍스트와 좌표를 추출해줘.
+            이 이미지에서 각 '시험 문제'를 찾아 구조화된 JSON 데이터로 추출해줘.
             
-            [지시사항]
-            1. 이미지 내의 모든 문제를 감지해. 문제 번호, 지문, 보기, 그림을 모두 포함하는 전체 영역(Bounding Box)을 잡아야 해.
-            2. 좌표는 [ymin, xmin, ymax, xmax] 형식으로, 0 에서 1000 사이의 정수 값(normalized coordinates * 1000)으로 반환해.
-            3. 필기(손글씨, 채점 마크)는 무시하고 인쇄된 텍스트만 추출해.
-            4. 수식은 LaTeX로 변환해.
-            5. 출력은 다음 JSON 형식 배열이어야 해:
-            [
-              {
-                "question_number": "1",
-                "box_2d": [ymin, xmin, ymax, xmax],
-                "question_text": "...",
-                "choices": ["1. ...", "2. ..."]
-              }
-            ]
+            [핵심 지시사항]
+            1. **줄 바꿈 및 띄어쓰기 엄수**: 문제에 표기된 줄 바꿈(`\\n`)과 띄어쓰기를 원본과 최대한 동일하게 유지해.
+            2. **수식/기호/화학식 처리**: 수식, 화학식, 기호 등은 모두 `$` 기호로 감싸는 LaTeX 형식을 사용해. 
+            3. **표(Table) 처리**: 지문에 포함된 표는 `scenario`에서 제외하고, `charts` 필드에 Markdown Table 형식으로 따로 추출해.
+            4. **시각 자료(Visuals) 상세 추출**: 문제 내부에 포함된 그림, 그래프, 도표 등은 전체 문제 영역과 별도로 `visual_elements`에 좌표와 함께 식별해 줘.
+            
+            [표준 스키마]
+            {
+              "content": {
+                "header": "문제 번호 (예: '1.')",
+                "scenario": "배경 상황/지문 (표 제외, 원본 줄바꿈 유지)",
+                "charts": ["Markdown 형식의 표 내용"], 
+                "visual_elements": [
+                  { "type": "graph/diagram", "box_2d": [ymin, xmin, ymax, xmax] } 
+                ], // 문제 내의 시각 자료 위치 (없으면 빈 배열)
+                "directive": "질문 지시문 (원본 줄바꿈 유지)",
+                "propositions": "ㄱ, ㄴ, ㄷ 보기 내용 (원본 줄바꿈 유지, 없으면 null)",
+                "options": ["① ...", "② ...", "③ ..."] // 선지
+              },
+              "box_2d": [ymin, xmin, ymax, xmax] // 문제 전체 영역
+            }
             """
             
             response = model.generate_content([prompt, pil_img])
@@ -65,7 +72,7 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
     problems = strict_json_parse(extraction_result)
     if not problems:
         print(f"No problems parsed for {image_path}")
-        return
+        return []
 
     try:
         img = Image.open(image_path)
@@ -83,7 +90,14 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
         if "box_2d" not in prob:
             continue
             
-        q_num = prob.get("question_number", "unknown")
+        # Standardized schema uses content.header
+        content = prob.get("content", {})
+        q_header = content.get("header") or prob.get("question_number") or "unknown"
+        
+        # Sanitize for filename (extract only numbers if possible)
+        import re
+        q_num = re.sub(r'[^0-9]', '', str(q_header)) or "None"
+        
         ymin, xmin, ymax, xmax = prob["box_2d"]
         
         # Convert 1000-scale to pixels with some padding
@@ -93,11 +107,35 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
         bottom = min(height, (ymax / 1000) * height + 10)
         
         try:
+            # Crop main problem
             crop = img.crop((left, top, right, bottom))
             crop_path = os.path.join(crop_dir, f"q_{q_num}.png")
             crop.save(crop_path)
+            
+            # Crop visual elements (new feature)
+            visuals = content.get("visual_elements", [])
+            for idx, vis in enumerate(visuals):
+                if "box_2d" in vis:
+                    v_ymin, v_xmin, v_ymax, v_xmax = vis["box_2d"]
+                    v_left = max(0, (v_xmin / 1000) * width)
+                    v_top = max(0, (v_ymin / 1000) * height)
+                    v_right = min(width, (v_xmax / 1000) * width)
+                    v_bottom = min(height, (v_ymax / 1000) * height)
+                    
+                    try:
+                        vis_crop = img.crop((v_left, v_top, v_right, v_bottom))
+                        vis_filename = f"q_{q_num}_visual_{idx}.png"
+                        vis_path = os.path.join(crop_dir, vis_filename)
+                        vis_crop.save(vis_path)
+                        # Add path to the visual object for frontend
+                        vis["image_path"] = vis_filename 
+                    except Exception as ve:
+                        print(f"Visual crop error for Q{q_num} visual {idx}: {ve}")
+                        
         except Exception as e:
             print(f"Crop error for Q{q_num}: {e}")
+            
+    return problems
 
 def process_pdf(pdf_path):
     print(f"\n--- Processing: {os.path.basename(pdf_path)} ---")
@@ -141,11 +179,18 @@ def process_pdf(pdf_path):
         print(f"Processing Page {i+1}/{len(image_paths)}...")
         result = extract_content_with_vlm(img_path)
         
-        with open(json_path, "w", encoding="utf-8") as f:
-            f.write(result)
-            
-        crop_and_save_exam_problems(img_path, result, exam_output_dir)
+        # Crop and get updated data with image paths
+        updated_problems = crop_and_save_exam_problems(img_path, result, exam_output_dir)
         
+        # Save the updated structured data
+        import json
+        with open(json_path, "w", encoding="utf-8") as f:
+            if updated_problems:
+                json.dump(updated_problems, f, ensure_ascii=False, indent=2)
+            else:
+                 # Fallback to saving raw result if parsing failed
+                f.write(result)
+            
         # Rate limit handling (free tier usually has small RPM)
         print("Waiting 35s for rate limit...")
         time.sleep(35)
