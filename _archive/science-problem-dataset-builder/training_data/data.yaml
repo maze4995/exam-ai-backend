@@ -1,0 +1,5 @@
+names:
+  0: problem
+path: C:\Users\rlgus\.gemini\antigravity\scratch\science-problem-dataset-builder\training_data
+train: images
+val: images

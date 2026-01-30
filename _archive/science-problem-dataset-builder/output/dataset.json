@@ -1,0 +1,1076 @@
+[
+  {
+    "id": "1",
+    "page": 50,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "1",
+      "scenario": "1  원자의 구조  원자는 원자핵과",
+      "visuals": [
+        "p50_1.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "❶  \n기출 Tip  -1 양전하를 띠며, 원자의\n중심에 있다. 원자의\t구조\n• 양성자와 전자는 전하량의 크기",
+        "❷\n  가 같고 부호가 반대이다.\n음전하를 띠며, 원자핵 • 원자핵은 원자 질량의 대부분을 \n주위를 돌고 있다. 차지한다. ➜ 전자는 양성자나 \n중성자에 비해 질량이 매우 작기 \n때문이다."
+      ]
+    },
+    "full_text": "1  원자의 구조  원자는 원자핵과\n❶  \n기출 Tip  -1 양전하를 띠며, 원자의\n중심에 있다. 원자의\t구조\n• 양성자와 전자는 전하량의 크기 ❷\n  가 같고 부호가 반대이다.\n음전하를 띠며, 원자핵 • 원자핵은 원자 질량의 대부분을 \n주위를 돌고 있다. 차지한다. ➜ 전자는 양성자나 \n중성자에 비해 질량이 매우 작기 \n때문이다."
+  },
+  {
+    "id": "2",
+    "page": 50,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "2",
+      "scenario": "2  원자의 특성  \n전하량의",
+      "visuals": [
+        "p50_2.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "① 한 원자를 구성하는 양성자수와\n기출 Tip  -2",
+        "② 양성자수는 원자마다 다르다.  원자의\t특성\n같은 원자인 경우 양성자수는 전\n자 수와 같다. 하지만 양성자수와  원\n중성자수는 같을 수도 있고, 다를 \n수도 있다.\n\t 원자의\t전자\t배치"
+      ]
+    },
+    "full_text": "2  원자의 특성  \n전하량의\n① 한 원자를 구성하는 양성자수와\n기출 Tip  -2\n② 양성자수는 원자마다 다르다.  원자의\t특성\n같은 원자인 경우 양성자수는 전\n자 수와 같다. 하지만 양성자수와  원\n중성자수는 같을 수도 있고, 다를 \n수도 있다.\n\t 원자의\t전자\t배치"
+  },
+  {
+    "id": "1",
+    "page": 50,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "1",
+      "scenario": "1  에너지 준위와 전자 껍질    ",
+      "visuals": [
+        "p50_1.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "① 에너지 준위: 원자핵 주위를 돌",
+        "② 전자 껍질: 원자핵 주위의 전자\n( 수소 원자의 전자 배치와 에너지 준\n수소의 원자핵\n전자 껍질 사이에는 전자가 존재하지 않는다"
+      ]
+    },
+    "full_text": "1  에너지 준위와 전자 껍질    \n① 에너지 준위: 원자핵 주위를 돌\n② 전자 껍질: 원자핵 주위의 전자\n( 수소 원자의 전자 배치와 에너지 준\n수소의 원자핵\n전자 껍질 사이에는 전자가 존재하지 않는다"
+  },
+  {
+    "id": "2",
+    "page": 50,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "2",
+      "scenario": "2  전자 배치의 원리  ",
+      "visuals": [
+        "p50_2.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "① 전자는 원자핵에 가까운 전자",
+        "② 각 전자 껍질에 최대로 배치될\n대",
+        "❺ 개, 두 번째 전자 껍질\n( 산소 원자의 전자 껍질과 전자 배치\n• 첫 번째 전자 \n8+ • 두 번째 전자 \n•전자 수가  이\n8"
+      ]
+    },
+    "full_text": "2  전자 배치의 원리  \n① 전자는 원자핵에 가까운 전자 \n② 각 전자 껍질에 최대로 배치될\n대 ❺ 개, 두 번째 전자 껍질\n( 산소 원자의 전자 껍질과 전자 배치\n• 첫 번째 전자 \n8+ • 두 번째 전자 \n•전자 수가  이\n8"
+  },
+  {
+    "id": "3",
+    "page": 50,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "3",
+      "scenario": "3  원자가 전자  원자의 전자 배치",
+      "visuals": [
+        "p50_3.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "① 화학 반응에 참여하므로 원소의",
+        "② 원자가 전자 수가 같은 원소들"
+      ]
+    },
+    "full_text": "3  원자가 전자  원자의 전자 배치\n① 화학 반응에 참여하므로 원소의\n② 원자가 전자 수가 같은 원소들"
+  },
+  {
+    "id": "50",
+    "page": 50,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "50",
+      "scenario": "50 Ⅰ. 물질과 규칙성",
+      "visuals": [
+        "p50_50.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "50 Ⅰ. 물질과 규칙성"
+  },
+  {
+    "id": "6",
+    "page": 50,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "6",
+      "scenario": "6 6\n돌고 있는 전자가 갖는 특정한 에너지 값\n자가 돌고 있는 특정한 에너지 준위의 궤도\n준위 )\n에\n너\n지 • 전자 껍질의 에너지 준위는 원자핵과 가까울수록 낮고, \n원자핵에서 멀수록 높다.\n• 각 전자 껍질은 일정한 에너지 준위를 갖는다.\n전자는 에너지 준위가 다른 전자 껍질로 이동할 수 있다. 전자가 낮은 에\n너지 준위에서 높은 에너지 준위로 이동할 때는 그 차이만큼 에너지를 \n흡수하고, 높은 에너지 준위에서 낮은 에너지 준위로 이동할 때는 그 차\n이만큼 에너지를 빛의 형태로 방출한다.\n다.\n 껍질부터 차례로 배치된다. 가장 안정한 전자 배치이다.\n될 수 있는 전자 수는 정해져 있다. ➜ 첫 번째 전자 껍질에는 최\n질에는 최대 ❻ 개가 배치된다.\n치 )\n 껍질: 에너지 준위가 낮아 전자  개가 먼저 채워진다.\n 껍질: 첫 번째 전자 껍질을 채우2고 남은 전자  개가 들어 있다.  \n이므로 양성자수도  이다. ➜ 원자 번호는  이다6.",
+      "visuals": [
+        "p50_6.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "6 6\n돌고 있는 전자가 갖는 특정한 에너지 값\n자가 돌고 있는 특정한 에너지 준위의 궤도\n준위 )\n에\n너\n지 • 전자 껍질의 에너지 준위는 원자핵과 가까울수록 낮고, \n원자핵에서 멀수록 높다.\n• 각 전자 껍질은 일정한 에너지 준위를 갖는다.\n전자는 에너지 준위가 다른 전자 껍질로 이동할 수 있다. 전자가 낮은 에\n너지 준위에서 높은 에너지 준위로 이동할 때는 그 차이만큼 에너지를 \n흡수하고, 높은 에너지 준위에서 낮은 에너지 준위로 이동할 때는 그 차\n이만큼 에너지를 빛의 형태로 방출한다.\n다.\n 껍질부터 차례로 배치된다. 가장 안정한 전자 배치이다.\n될 수 있는 전자 수는 정해져 있다. ➜ 첫 번째 전자 껍질에는 최\n질에는 최대 ❻ 개가 배치된다.\n치 )\n 껍질: 에너지 준위가 낮아 전자  개가 먼저 채워진다.\n 껍질: 첫 번째 전자 껍질을 채우2고 남은 전자  개가 들어 있다.  \n이므로 양성자수도  이다. ➜ 원자 번호는  이다6."
+  },
+  {
+    "id": "8",
+    "page": 50,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "8",
+      "scenario": "8 8\n치에서 가장 ❼  전자 껍질에 들어 있는 전자\n의 화학적 성질을 결정한다.\n들은 화학적 성질이 비슷하다.",
+      "visuals": [
+        "p50_8.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "8 8\n치에서 가장 ❼  전자 껍질에 들어 있는 전자\n의 화학적 성질을 결정한다.\n들은 화학적 성질이 비슷하다."
+  },
+  {
+    "id": "4",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "4",
+      "scenario": "4  전자 배치에 따른 원소의 주기성  \n전자가 들어 있는 ❽     가 같다.\n같은 주기 원소\n➜ 전자가 들어 있는 전자 껍질 수는 주기 번호와 같다\n• ❾     가 같다.\n같은 족 원소 • 같은 족 원소들은 화학적 성질이 비슷하다.(단, 수소\n(동족 원소) • 원자가 전자 수는 원소가 속한 족 번호의 끝자리 수\n•  족 원소는 화학 반응에 참여하는 전자가 없으므로\n18\n족 1 2 13 14 15\n주기",
+      "visuals": [
+        "p51_4.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "4  전자 배치에 따른 원소의 주기성  \n전자가 들어 있는 ❽     가 같다.\n같은 주기 원소\n➜ 전자가 들어 있는 전자 껍질 수는 주기 번호와 같다\n• ❾     가 같다.\n같은 족 원소 • 같은 족 원소들은 화학적 성질이 비슷하다.(단, 수소\n(동족 원소) • 원자가 전자 수는 원소가 속한 족 번호의 끝자리 수\n•  족 원소는 화학 반응에 참여하는 전자가 없으므로\n18\n족 1 2 13 14 15\n주기"
+  },
+  {
+    "id": "1",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "1",
+      "scenario": "1 1+ 전자 껍질 1+ 전자\nH",
+      "visuals": [
+        "p51_1.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "1 1+ 전자 껍질 1+ 전자\nH"
+  },
+  {
+    "id": "2",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "2",
+      "scenario": "2 3+ 4+ 5+ 6+ 7+\nLi Be B C N O",
+      "visuals": [
+        "p51_2.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "2 3+ 4+ 5+ 6+ 7+\nLi Be B C N O"
+  },
+  {
+    "id": "3",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "3",
+      "scenario": "3 11+ 12+ 13+ 14+ 15+\nNa Mg Al Si P\n원자가",
+      "visuals": [
+        "p51_3.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "3 11+ 12+ 13+ 14+ 15+\nNa Mg Al Si P\n원자가"
+  },
+  {
+    "id": "1",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "1",
+      "scenario": "1 2 3 4 5 전자 수\n▲ 원자 번호  까지 원자의 전자 배치\n1￣18",
+      "visuals": [
+        "p51_1.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "1 2 3 4 5 전자 수\n▲ 원자 번호  까지 원자의 전자 배치\n1￣18"
+  },
+  {
+    "id": "5",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "5",
+      "scenario": "5  원소의 주기성이 나타나는 까닭  원자 번호가 증가함에 따라 \n원자가 전자 수가 주기적으로 변하기 때문이다.\n빈출 자",
+      "visuals": [
+        "p51_5.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "5  원소의 주기성이 나타나는 까닭  원자 번호가 증가함에 따라 \n원자가 전자 수가 주기적으로 변하기 때문이다.\n빈출 자"
+  },
+  {
+    "id": "198",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "198",
+      "scenario": "198  그림은 원자의 구조를 모형으로 나타낸 것이다.\nA B\nC\n이에 대한 설명으로 옳은 것은 , 옳지 않은 것은  로 표시하시오.\n\\ ⑴  는 양성자,  는 중성자,  는 전자이다.  ( )\n⑵ 원A자의 중심에B는 원자핵이 C있다.  ( )\n⑶ 원자핵은  와  로 이루어져 있다.  ( )\n⑷ 원자 번호는A  B의 수 의 수와 같다.  ( )\n⑸  는 양전하를A 띠며, +원자B핵 주위에 분포한다.  ( )\n⑹ C는 특정한 에너지 준위의 궤도를 따라 운동한다.  ( )\n⑺ 원C자는 전기적으로 중성이므로 원자를 구성하는  의 수와  의 수는 \n같다.  A (C )\n⑻ 원자의 종류마다  의 수가 다르다.  ( )\nA",
+      "visuals": [
+        "p51_198.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "198  그림은 원자의 구조를 모형으로 나타낸 것이다.\nA B\nC\n이에 대한 설명으로 옳은 것은 , 옳지 않은 것은  로 표시하시오.\n\\ ⑴  는 양성자,  는 중성자,  는 전자이다.  ( )\n⑵ 원A자의 중심에B는 원자핵이 C있다.  ( )\n⑶ 원자핵은  와  로 이루어져 있다.  ( )\n⑷ 원자 번호는A  B의 수 의 수와 같다.  ( )\n⑸  는 양전하를A 띠며, +원자B핵 주위에 분포한다.  ( )\n⑹ C는 특정한 에너지 준위의 궤도를 따라 운동한다.  ( )\n⑺ 원C자는 전기적으로 중성이므로 원자를 구성하는  의 수와  의 수는 \n같다.  A (C )\n⑻ 원자의 종류마다  의 수가 다르다.  ( )\nA"
+  },
+  {
+    "id": "16",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "16",
+      "scenario": "16 17 18\n2+\nHe\n8+ 9+ 10+\nO F Ne\n16+ 17+ 18+\nS Cl Ar",
+      "visuals": [
+        "p51_16.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "16 17 18\n2+\nHe\n8+ 9+ 10+\nO F Ne\n16+ 17+ 18+\nS Cl Ar"
+  },
+  {
+    "id": "6",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "6",
+      "scenario": "6 7 0",
+      "visuals": [
+        "p51_6.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "치 ",
+        "❶ 원자핵",
+        "❷ 전자",
+        "❸ 중성",
+        "❹ 원자 번호",
+        "❺    ❻    ❼  \n 원소의 화학적 성질을 결정하는  바깥  ❽ 전자 껍질 수2  ❾ 원8자가 \n전자 수\n자료 보기\n정답과 해설 18쪽"
+      ]
+    },
+    "full_text": "6 7 0\n치  ❶ 원자핵  ❷ 전자  ❸ 중성   \n❹ 원자 번호  ❺    ❻    ❼  \n 원소의 화학적 성질을 결정하는  바깥  ❽ 전자 껍질 수2  ❾ 원8자가 \n전자 수\n자료 보기\n정답과 해설 18쪽"
+  },
+  {
+    "id": "199",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "199",
+      "scenario": "199  그림은 두 가지 원자의 전자 배치를 모형으로 나타낸 것이다.\n8+ 16+\nA B\n이에 대한 설명으로 옳은 것은 , 옳지 않은 것은  로 표시하시오.\n\\ ⑴  와  는 전자가 들어 있는 전자 껍질 수가 같다.  ( )\n⑵ A와 B는 원자가 전자 수가 같다.  ( )\n⑶ A의 B원자 번호는  이다.  ( )\n⑷ A는  주기  족 원8소이다.  ( )\n⑸ B와 3는 화6학적 성질이 비슷하다.  ( )\n⑹ 양A성자B수는  보다  가 크다.  ( )\n⑺  는 산소 원A자의 전B자 배치이고,  는 황 원자의 전자 배치이다. \nA  B ( )",
+      "visuals": [
+        "p51_199.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "199  그림은 두 가지 원자의 전자 배치를 모형으로 나타낸 것이다.\n8+ 16+\nA B\n이에 대한 설명으로 옳은 것은 , 옳지 않은 것은  로 표시하시오.\n\\ ⑴  와  는 전자가 들어 있는 전자 껍질 수가 같다.  ( )\n⑵ A와 B는 원자가 전자 수가 같다.  ( )\n⑶ A의 B원자 번호는  이다.  ( )\n⑷ A는  주기  족 원8소이다.  ( )\n⑸ B와 3는 화6학적 성질이 비슷하다.  ( )\n⑹ 양A성자B수는  보다  가 크다.  ( )\n⑺  는 산소 원A자의 전B자 배치이고,  는 황 원자의 전자 배치이다. \nA  B ( )"
+  },
+  {
+    "id": "07",
+    "page": 51,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "07",
+      "scenario": "07 원자의 전자 배치 51",
+      "visuals": [
+        "p51_07.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "07 원자의 전자 배치 51"
+  },
+  {
+    "id": "200",
+    "page": 52,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "200",
+      "scenario": "하하 중 상\n원자의 구조에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로",
+      "visuals": [
+        "p52_200.png"
+      ],
+      "directive": "고른 것은?",
+      "propositions": "ㄱ. 원자핵은 양성자와 전자로 이루어져 있다.\nㄴ. 중성자는 전하를 띠지 않는다.\nㄷ. 원자를 구성하는 양성자수와 전자 수는 같다.",
+      "options": [
+        "① ㄷ",
+        "② ㄱ, ㄴ",
+        "③ ㄱ, ㄷ",
+        "④ ㄴ, ㄷ",
+        "⑤ ㄱ, ㄴ, ㄷ\n빈출"
+      ]
+    },
+    "full_text": "200 \n하하 중 상\n원자의 구조에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 \n고른 것은?\n<  보기  >\nㄱ. 원자핵은 양성자와 전자로 이루어져 있다.\nㄴ. 중성자는 전하를 띠지 않는다.\nㄷ. 원자를 구성하는 양성자수와 전자 수는 같다.\n① ㄷ  ② ㄱ, ㄴ   ③ ㄱ, ㄷ\n④ ㄴ, ㄷ  ⑤ ㄱ, ㄴ, ㄷ\n빈출"
+  },
+  {
+    "id": "201",
+    "page": 52,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "201",
+      "scenario": "하 중중 상 대표문제  多  보기\n그림은 어떤 원자의 구조를 모형으로 나타낸 것이다.\nC\nA\nB D",
+      "visuals": [
+        "p52_201.png"
+      ],
+      "directive": "이에 대한 설명으로 옳지 않은 것은?",
+      "propositions": null,
+      "options": [
+        "① 원자는  와  로 이루어져 있다.",
+        "②  는   A주위를B 돌고 있다.",
+        "③ A는 원B자 질량의 대부분을 차지한다.",
+        "④ 원B자 번호는  의 수에 의해 결정된다.",
+        "⑤  가 양전하를C 띠는 까닭은   때문이다.\n⑥ B와  는 전하량의 크기가 같C지만 부호는 서로 반대이다.\n⑦ A와 C의 수가 같기 때문에 원자는 전기적으로 중성이다.\n⑧ 원C자는D 원자 번호와 같은 수의  를 가진다.\n⑨ 이 원자는 원자 번호가  이다.A\n6"
+      ]
+    },
+    "full_text": "201 \n하 중중 상 대표문제  多  보기\n그림은 어떤 원자의 구조를 모형으로 나타낸 것이다.\nC\nA\nB D\n이에 대한 설명으로 옳지 않은 것은?\n① 원자는  와  로 이루어져 있다.            \n②  는   A주위를B 돌고 있다.\n③ A는 원B자 질량의 대부분을 차지한다.\n④ 원B자 번호는  의 수에 의해 결정된다.\n⑤  가 양전하를C 띠는 까닭은   때문이다.\n⑥ B와  는 전하량의 크기가 같C지만 부호는 서로 반대이다.\n⑦ A와 C의 수가 같기 때문에 원자는 전기적으로 중성이다.\n⑧ 원C자는D 원자 번호와 같은 수의  를 가진다.\n⑨ 이 원자는 원자 번호가  이다.A\n6"
+  },
+  {
+    "id": "52",
+    "page": 52,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "52",
+      "scenario": "52 Ⅰ. 물질과 규칙성",
+      "visuals": [
+        "p52_52.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "52 Ⅰ. 물질과 규칙성"
+  },
+  {
+    "id": "202",
+    "page": 52,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "202",
+      "scenario": "하 중중 상\n그림은 원자의 구조를, 표는 원자를 구성하는 입자  의 상대적 \n전하량을 나타낸 것이다. A￣C\nC 입자 상대적 전하량\nA B\nA +1\nB\nC",
+      "visuals": [
+        "p52_202.png"
+      ],
+      "directive": "이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은?",
+      "propositions": "ㄱ.  는 양성자이다.\nㄴ. A의 수로 원자 번호를 정한다.\nㄷ. 원B자에서  ,  ,  가 가진 전하량의 합은  이다.\nA B C 0",
+      "options": [
+        "① ㄷ",
+        "② ㄱ, ㄴ",
+        "③ ㄱ, ㄷ",
+        "④ ㄴ, ㄷ",
+        "⑤ ㄱ, ㄴ, ㄷ"
+      ]
+    },
+    "full_text": "202 \n하 중중 상\n그림은 원자의 구조를, 표는 원자를 구성하는 입자  의 상대적 \n전하량을 나타낸 것이다. A￣C\nC 입자 상대적 전하량\nA B\nA +1\nB\nC\n이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은?\n<  보기  >\nㄱ.  는 양성자이다.\nㄴ. A의 수로 원자 번호를 정한다.\nㄷ. 원B자에서  ,  ,  가 가진 전하량의 합은  이다.\nA B C 0\n① ㄷ  ② ㄱ, ㄴ   ③ ㄱ, ㄷ\n④ ㄴ, ㄷ  ⑤ ㄱ, ㄴ, ㄷ"
+  },
+  {
+    "id": "203",
+    "page": 52,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "203",
+      "scenario": "하 중 상상\n표는 원자  를 구성하는 입자 수를 나타낸 것이다.\nA￣C\n입자 수\n원자\n(가) (나) (다)\nA 6 7 6\nB 6 8 x\nC y 8 7",
+      "visuals": [
+        "p52_203.png"
+      ],
+      "directive": "이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은?",
+      "propositions": "(단, (가) (다)는 양성자, 중성자, 전자 중 하나이고, (가)는 원자핵\n을 구성하￣며,  는 임의의 원소 기호이다.) \n A￣C\nㄱ.  이다.\nㄴ. (x나+)는y= 전1자3이고, (다)는 중성자이다.\nㄷ.  와  는 같은 족 원소이다.\nB C",
+      "options": [
+        "① ㄱ",
+        "② ㄴ",
+        "③ ㄱ, ㄴ",
+        "④ ㄱ, ㄷ",
+        "⑤ ㄴ, ㄷ"
+      ]
+    },
+    "full_text": "203 \n하 중 상상\n표는 원자  를 구성하는 입자 수를 나타낸 것이다.\nA￣C\n입자 수\n원자\n(가) (나) (다)\nA 6 7 6\nB 6 8 x\nC y 8 7\n이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은? \n(단, (가) (다)는 양성자, 중성자, 전자 중 하나이고, (가)는 원자핵\n을 구성하￣며,  는 임의의 원소 기호이다.) \n<  보기  > A￣C\nㄱ.  이다.\nㄴ. (x나+)는y= 전1자3이고, (다)는 중성자이다.\nㄷ.  와  는 같은 족 원소이다.\nB C\n① ㄱ  ② ㄴ    ③ ㄱ, ㄴ\n④ ㄱ, ㄷ  ⑤ ㄴ, ㄷ"
+  },
+  {
+    "id": "204",
+    "page": 53,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "204",
+      "scenario": "하 중 상상\n그림은  ,  주기 원자 또는 이온 A   1.2\n양성자수 의2 전3자 수와 \n전자 수 양성자수 1.0 B D\n전자 수\nA￣D 를 나타낸 것이다. 이에 대한 설\nC 0.8\n명으로 옳은 것만을 <보기>에서  9 10 11\n전자 수",
+      "visuals": [
+        "p53_204.png"
+      ],
+      "directive": "있는 대로 고른 것은?",
+      "propositions": "ㄱ. 양성자수는  가 가장 크다.\nㄴ.  와  는 화A학적 성질이 비슷하다.\nㄷ. B는 원D자가 전자  개를 얻어 형성된 음이온이다.\nC 2",
+      "options": [
+        "① ㄱ",
+        "② ㄴ",
+        "③ ㄷ",
+        "④ ㄱ, ㄷ",
+        "⑤ ㄴ, ㄷ\n\t 원자의\t전자\t배치"
+      ]
+    },
+    "full_text": "204 \n하 중 상상\n그림은  ,  주기 원자 또는 이온 A   1.2\n양성자수 의2 전3자 수와 \n전자 수 양성자수 1.0 B D\n전자 수\nA￣D 를 나타낸 것이다. 이에 대한 설\nC 0.8\n명으로 옳은 것만을 <보기>에서  9 10 11\n전자 수\n있는 대로 고른 것은?\n<  보기  >\nㄱ. 양성자수는  가 가장 크다.\nㄴ.  와  는 화A학적 성질이 비슷하다.\nㄷ. B는 원D자가 전자  개를 얻어 형성된 음이온이다.\nC 2\n① ㄱ  ② ㄴ    ③ ㄷ\n④ ㄱ, ㄷ  ⑤ ㄴ, ㄷ\n\t 원자의\t전자\t배치"
+  },
+  {
+    "id": "205",
+    "page": 53,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "205",
+      "scenario": "하하 중 상\n그림은 어떤 원자의 전자 배치를 모형으로 나타낸 \n것이다. 이에 대한 설명으로 옳은 것만을 <보기>\n8+",
+      "visuals": [
+        "p53_205.png"
+      ],
+      "directive": "에서 있는 대로 고른 것은?",
+      "propositions": "ㄱ. 산소 원자이다.\nㄴ.  주기  족 원소이다.\nㄷ. 가2장 바1깥6 전자 껍질에 들어 있는 전자 수는  이다.\n6",
+      "options": [
+        "① ㄷ",
+        "② ㄱ, ㄴ",
+        "③ ㄱ, ㄷ",
+        "④ ㄴ, ㄷ",
+        "⑤ ㄱ, ㄴ, ㄷ"
+      ]
+    },
+    "full_text": "205 \n하하 중 상\n그림은 어떤 원자의 전자 배치를 모형으로 나타낸 \n것이다. 이에 대한 설명으로 옳은 것만을 <보기>\n8+\n에서 있는 대로 고른 것은? \n<  보기  >\nㄱ. 산소 원자이다.\nㄴ.  주기  족 원소이다.\nㄷ. 가2장 바1깥6 전자 껍질에 들어 있는 전자 수는  이다.\n6\n① ㄷ  ② ㄱ, ㄴ   ③ ㄱ, ㄷ\n④ ㄴ, ㄷ  ⑤ ㄱ, ㄴ, ㄷ"
+  },
+  {
+    "id": "206",
+    "page": 53,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "206",
+      "scenario": "하하 중 상",
+      "visuals": [
+        "p53_206.png"
+      ],
+      "directive": "원자의 전자 배치에 대한 설명으로 옳은 것은?",
+      "propositions": null,
+      "options": [
+        "① 같은 주기 원소들은 원자가 전자 수가 같다.",
+        "② 같은 족 원소들은 전자가 들어 있는 전자 껍질 수가 같다.",
+        "③ 전자는 에너지 준위가 낮은 전자 껍질부터 채워진다.",
+        "④ 원자핵에서 가까운 전자 껍질일수록 에너지 준위가 높다.",
+        "⑤ 각 전자 껍질에 배치될 수 있는 최대 전자 수는 항상  이다.\n8"
+      ]
+    },
+    "full_text": "206 \n하하 중 상\n원자의 전자 배치에 대한 설명으로 옳은 것은?\n① 같은 주기 원소들은 원자가 전자 수가 같다.\n② 같은 족 원소들은 전자가 들어 있는 전자 껍질 수가 같다.\n③ 전자는 에너지 준위가 낮은 전자 껍질부터 채워진다.\n④ 원자핵에서 가까운 전자 껍질일수록 에너지 준위가 높다.\n⑤ 각 전자 껍질에 배치될 수 있는 최대 전자 수는 항상  이다.\n8"
+  },
+  {
+    "id": "207",
+    "page": 53,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "207",
+      "scenario": "207 \n하 중중 상\n그림은 나트륨( )의 원자핵과 전자가 들어 \n있는 전자 껍질N을a 모형으로 나타낸 것이다.  I\n이에 대한 설명으로 옳지 않은 것은8?+ 11+",
+      "visuals": [
+        "p53_207.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "A",
+        "① 나트륨은  주기 원소이다.\nB\nC",
+        "② 나트륨 원자3 의 원자가 전자 수는  이다.",
+        "③ 전자 껍질의 에너지 준위는  1 이다.",
+        "④ 전자들은 원자핵에서 먼 전자A <껍질B<부터C 채워진다.",
+        "⑤ 전자 껍질  에 들어 있는 총 전자 수는  이다.\nA￣C 11\n \n빈출"
+      ]
+    },
+    "full_text": "207 \n하 중중 상\n그림은 나트륨( )의 원자핵과 전자가 들어 \n있는 전자 껍질N을a 모형으로 나타낸 것이다.  I\n이에 대한 설명으로 옳지 않은 것은8?+ 11+\nA ① 나트륨은  주기 원소이다.\nB\nC\n② 나트륨 원자3 의 원자가 전자 수는  이다.\n③ 전자 껍질의 에너지 준위는  1 이다.\n④ 전자들은 원자핵에서 먼 전자A <껍질B<부터C 채워진다.\n⑤ 전자 껍질  에 들어 있는 총 전자 수는  이다.\nA￣C 11\n \n빈출"
+  },
+  {
+    "id": "208",
+    "page": 53,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "208",
+      "scenario": "208 \n하 중중 상 대표문제  多  보기\n그림은 원자  와  의 전자 배치를 모형으로 나타낸 것이다.\nA B\n9+ 17+\nA B\n이에 대한 설명으로 옳지 않은 것은? (단,  ,  는 임의의 원소 기호\n이다11.)+ A B\nA",
+      "visuals": [
+        "p53_208.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "①  는B  주기 원소이고,  는  주기 원소이다.\nC",
+        "② A와 2는 주기율표의 같B은 3가로줄에 위치한다.",
+        "③ A와 B는 모두 음이온이 되기 쉽다.",
+        "④ 실A온에B서  ,  는 모두 기체 상태이다.",
+        "⑤  ,  는 A반2응B성2이 커서 수소, 금속과 쉽게 반응한다.\n⑥ 반A2응성B2의 크기는  이다.\n⑦  는 충치 예방용 B치2<약A, 2는 수영장 물의 소독에 이용된다.\nA B"
+      ]
+    },
+    "full_text": "208 \n하 중중 상 대표문제  多  보기\n그림은 원자  와  의 전자 배치를 모형으로 나타낸 것이다.\nA B\n9+ 17+\nA B\n이에 대한 설명으로 옳지 않은 것은? (단,  ,  는 임의의 원소 기호\n이다11.)+ A B\nA\n①  는B  주기 원소이고,  는  주기 원소이다.\nC\n② A와 2는 주기율표의 같B은 3가로줄에 위치한다.\n③ A와 B는 모두 음이온이 되기 쉽다.\n④ 실A온에B서  ,  는 모두 기체 상태이다.\n⑤  ,  는 A반2응B성2이 커서 수소, 금속과 쉽게 반응한다.\n⑥ 반A2응성B2의 크기는  이다.\n⑦  는 충치 예방용 B치2<약A, 2는 수영장 물의 소독에 이용된다.\nA B"
+  },
+  {
+    "id": "209",
+    "page": 53,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "209",
+      "scenario": "209 \n하 중중 상 ● ●서술형 \n질소( ) 원자와8 마+그네슘(8+) 원자의1 1가+장 안정1한1+ 전자 배치를 모\n형으로N 나타내시오. Mg A A\nB B\nC C\n질소( ) 마그네슘( )\nN Mg",
+      "visuals": [
+        "p53_209.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "209 \n하 중중 상 ● ●서술형 \n질소( ) 원자와8 마+그네슘(8+) 원자의1 1가+장 안정1한1+ 전자 배치를 모\n형으로N 나타내시오. Mg A A\nB B\nC C\n질소( ) 마그네슘( )\nN Mg"
+  },
+  {
+    "id": "07",
+    "page": 53,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "07",
+      "scenario": "07 원자의 전자 배치 53",
+      "visuals": [
+        "p53_07.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "07 원자의 전자 배치 53"
+  },
+  {
+    "id": "210",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "210",
+      "scenario": "하 중중 상\n그림은 원자  의 전자 배치를 모형으로 나타낸 것이다.\nA￣C\n7+ 13+ 15+\nA B C",
+      "visuals": [
+        "p54_210.png"
+      ],
+      "directive": "이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은?",
+      "propositions": "(단,  는 임의의 원소 기호이다.)\n<  A보￣기C  >\nㄱ.  와  는 화학적 성질이 비슷하다.\nㄴ. A와 C는 같은 족 원소이다.\nㄷ. 원B자가C 전자 수가 가장 큰 것은  이다.\nㄹ.  와  는 비금속 원소이고,  는B 금속 원소이다.\nA C B",
+      "options": [
+        "① ㄱ, ㄴ",
+        "② ㄱ, ㄹ",
+        "③ ㄴ, ㄷ",
+        "④ ㄴ, ㄹ",
+        "⑤ ㄷ, ㄹ"
+      ]
+    },
+    "full_text": "210 \n하 중중 상\n그림은 원자  의 전자 배치를 모형으로 나타낸 것이다.\nA￣C\n7+ 13+ 15+\nA B C\n이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은? \n(단,  는 임의의 원소 기호이다.)\n<  A보￣기C  >\nㄱ.  와  는 화학적 성질이 비슷하다.\nㄴ. A와 C는 같은 족 원소이다.\nㄷ. 원B자가C 전자 수가 가장 큰 것은  이다.\nㄹ.  와  는 비금속 원소이고,  는B 금속 원소이다.\nA C B\n① ㄱ, ㄴ  ② ㄱ, ㄹ   ③ ㄴ, ㄷ\n④ ㄴ, ㄹ  ⑤ ㄷ, ㄹ"
+  },
+  {
+    "id": "211",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "211",
+      "scenario": "211 \n하 중중 상 ● ●서술형 \n표는 몇 가지 원소의 원자 번호와 원소 기호를 나타낸 것이다.\n원자 번호\n원소 기호 2 3 11 13\nHe Li Na Al\n화학적 성질이 비슷한 원소의 원소 기호를 모두 쓰고, 그 까닭을 서\n술하시오.",
+      "visuals": [
+        "p54_211.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "211 \n하 중중 상 ● ●서술형 \n표는 몇 가지 원소의 원자 번호와 원소 기호를 나타낸 것이다.\n원자 번호\n원소 기호 2 3 11 13\nHe Li Na Al\n화학적 성질이 비슷한 원소의 원소 기호를 모두 쓰고, 그 까닭을 서\n술하시오."
+  },
+  {
+    "id": "212",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "212",
+      "scenario": "212 \n하 중중 상\n그림은 주기율표의 일부를 나타낸 것이다.\n주주기기 족 1 2 13 14 15 16 17 18",
+      "visuals": [
+        "p54_212.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "212 \n하 중중 상\n그림은 주기율표의 일부를 나타낸 것이다.\n주주기기 족 1 2 13 14 15 16 17 18"
+  },
+  {
+    "id": "1",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "1",
+      "scenario": "1 A",
+      "visuals": [
+        "p54_1.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "1 A"
+  },
+  {
+    "id": "2",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "2",
+      "scenario": "2 B",
+      "visuals": [
+        "p54_2.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "2 B"
+  },
+  {
+    "id": "3",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "3",
+      "scenario": "C D E",
+      "visuals": [
+        "p54_3.png"
+      ],
+      "directive": "이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은?",
+      "propositions": "(단,  는 임의의 원소 기호이다.)\n<  A보￣기E  >\nㄱ.  ,  ,  는 화학적 성질이 비슷하다.\nㄴ. A, B, C는 전자가 들어 있는 전자 껍질 수가 같다.\nㄷ. C원자D가 E전자 수가 가장 큰 원소는  이다.\nE",
+      "options": [
+        "① ㄱ",
+        "② ㄴ",
+        "③ ㄷ",
+        "④ ㄱ, ㄴ",
+        "⑤ ㄴ, ㄷ"
+      ]
+    },
+    "full_text": "3 C D E\n이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은? \n(단,  는 임의의 원소 기호이다.)\n<  A보￣기E  >\nㄱ.  ,  ,  는 화학적 성질이 비슷하다.\nㄴ. A, B, C는 전자가 들어 있는 전자 껍질 수가 같다.\nㄷ. C원자D가 E전자 수가 가장 큰 원소는  이다.\nE\n① ㄱ  ② ㄴ    ③ ㄷ\n④ ㄱ, ㄴ  ⑤ ㄴ, ㄷ"
+  },
+  {
+    "id": "54",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "54",
+      "scenario": "54 Ⅰ. 물질과 규칙성",
+      "visuals": [
+        "p54_54.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "54 Ⅰ. 물질과 규칙성"
+  },
+  {
+    "id": "213",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "213",
+      "scenario": "213 \n하 중중 상\n그림은 주기율표의 일부를 나타낸 것이다.\n족\n주주기기 1 2 13 14 15 16 17 18",
+      "visuals": [
+        "p54_213.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "213 \n하 중중 상\n그림은 주기율표의 일부를 나타낸 것이다.\n족\n주주기기 1 2 13 14 15 16 17 18"
+  },
+  {
+    "id": "2",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "2",
+      "scenario": "2 Be F",
+      "visuals": [
+        "p54_2.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "2 Be F"
+  },
+  {
+    "id": "3",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "3",
+      "scenario": "3 Na S Ar\n이에 대한 설명으로 옳은 것만을 모두 고르면? ( 개)",
+      "visuals": [
+        "p54_3.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "①  과  은 원자가 전자 수가 같다. 2",
+        "② 원Be자 번F호가 가장 큰 원소는  이다.",
+        "③ 전자가 들어 있는 전자 껍질 A수r가  인 원소는 세 가지이다.",
+        "④  과  은 열과 전기가 잘 통한다2.",
+        "⑤ B,e  , Na은 비금속 원소로 음이온이 되기 쉽다.\nF S Ar\n빈출"
+      ]
+    },
+    "full_text": "3 Na S Ar\n이에 대한 설명으로 옳은 것만을 모두 고르면? ( 개)\n①  과  은 원자가 전자 수가 같다. 2\n② 원Be자 번F호가 가장 큰 원소는  이다.\n③ 전자가 들어 있는 전자 껍질 A수r가  인 원소는 세 가지이다.\n④  과  은 열과 전기가 잘 통한다2.\n⑤ B,e  , Na은 비금속 원소로 음이온이 되기 쉽다.\nF S Ar\n빈출"
+  },
+  {
+    "id": "214",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "214",
+      "scenario": "214 \n하 중중 상 ● ●서술형 \n그림은 주기율표의 일부를 나타낸 것이다.\n족\n주주기기 1 2 13 14 15 16 17 18\n1",
+      "visuals": [
+        "p54_214.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "214 \n하 중중 상 ● ●서술형 \n그림은 주기율표의 일부를 나타낸 것이다.\n족\n주주기기 1 2 13 14 15 16 17 18\n1"
+  },
+  {
+    "id": "2",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "2",
+      "scenario": "A B",
+      "visuals": [
+        "p54_2.png"
+      ],
+      "directive": "원자  ,  의 전자 배치에서 공통점과 차이점을 각각 서술하시오.",
+      "propositions": "(단,  A,  B는 임의의 원소 기호이다.)\nA B",
+      "options": []
+    },
+    "full_text": "2 A B\n원자  ,  의 전자 배치에서 공통점과 차이점을 각각 서술하시오. \n(단,  A,  B는 임의의 원소 기호이다.)\nA B"
+  },
+  {
+    "id": "215",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "215",
+      "scenario": "215 \n하 중중 상\n다음은 원자  에 대한 자료를 나타낸 것이다.\nA￣E\n•  는 각각 주기율표의 빗금 친 부분 중 한 곳에 위치한다.\nA￣\nE 족",
+      "visuals": [
+        "p54_215.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "215 \n하 중중 상\n다음은 원자  에 대한 자료를 나타낸 것이다.\nA￣E\n•  는 각각 주기율표의 빗금 친 부분 중 한 곳에 위치한다.\nA￣\nE 족"
+  },
+  {
+    "id": "1",
+    "page": 54,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "1",
+      "scenario": "1 2 13 14 15 16 17 18\n주주기기\n2\n3\n4\n•  ,  ,  는 금속 원소이다.\n•A  의B 원자C가 전자 수는  이다.\n•B  와  에서 전자가 들어1 있는 전자 껍질 수의 합은  이다.\nA D 7\n,  ,  의 원자가 전자 수를 더한 값을 구하시오. (단,  는 임\nA의의D 원E소 기호이다.) A￣E",
+      "visuals": [
+        "p54_1.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "1 2 13 14 15 16 17 18\n주주기기\n2\n3\n4\n•  ,  ,  는 금속 원소이다.\n•A  의B 원자C가 전자 수는  이다.\n•B  와  에서 전자가 들어1 있는 전자 껍질 수의 합은  이다.\nA D 7\n,  ,  의 원자가 전자 수를 더한 값을 구하시오. (단,  는 임\nA의의D 원E소 기호이다.) A￣E"
+  },
+  {
+    "id": "216",
+    "page": 55,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "216",
+      "scenario": "하 중중 상\n다음은 원자  에 대한 자료를 나타낸 것이다.\nA￣D\n•  는 각각 주기율표의 빗금 친 부분 중 한 곳에 위치한다.\nA￣D 족\n주주기기 1 2 13 14 15 16 17 18\n2\n3\n•  와  는 같은 족 원소이다.\n•A 원자 B번호는  가  보다 크다.\n•  와  는 전자D가 들C어 있는 전자 껍질 수가 다르다.\nB D",
+      "visuals": [
+        "p55_216.png"
+      ],
+      "directive": "이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은?",
+      "propositions": "(단,  는 임의의 원소 기호이다.)\n<  A보￣기D  >\nㄱ. 원자 번호는  가 가장 크다.\nㄴ.  와  는 같은A 주기 원소이다.\nㄷ. B와 C는 전자가 들어 있는 전자 껍질 수가 같다.\nA D",
+      "options": [
+        "① ㄷ",
+        "② ㄱ, ㄴ",
+        "③ ㄱ, ㄷ",
+        "④ ㄴ, ㄷ",
+        "⑤ ㄱ, ㄴ, ㄷ"
+      ]
+    },
+    "full_text": "216 \n하 중중 상\n다음은 원자  에 대한 자료를 나타낸 것이다.\nA￣D\n•  는 각각 주기율표의 빗금 친 부분 중 한 곳에 위치한다.\nA￣D 족\n주주기기 1 2 13 14 15 16 17 18\n2\n3\n•  와  는 같은 족 원소이다.\n•A 원자 B번호는  가  보다 크다.\n•  와  는 전자D가 들C어 있는 전자 껍질 수가 다르다.\nB D\n이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은? \n(단,  는 임의의 원소 기호이다.)\n<  A보￣기D  >\nㄱ. 원자 번호는  가 가장 크다.\nㄴ.  와  는 같은A 주기 원소이다.\nㄷ. B와 C는 전자가 들어 있는 전자 껍질 수가 같다.\nA D\n① ㄷ  ② ㄱ, ㄴ   ③ ㄱ, ㄷ\n④ ㄴ, ㄷ  ⑤ ㄱ, ㄴ, ㄷ"
+  },
+  {
+    "id": "217",
+    "page": 55,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "217",
+      "scenario": "217 \n하 중중 상\n그림은 원자  의 원자가 전자 수와 전자가 들어 있는 전자 껍\n질 수를 나타낸A ￣것D이다.",
+      "visuals": [
+        "p55_217.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "217 \n하 중중 상\n그림은 원자  의 원자가 전자 수와 전자가 들어 있는 전자 껍\n질 수를 나타낸A ￣것D이다."
+  },
+  {
+    "id": "3",
+    "page": 55,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "3",
+      "scenario": "3 D\nB C\n전자가 2\n들어 있는\n전자 껍질 수 A 1",
+      "visuals": [
+        "p55_3.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "3 D\nB C\n전자가 2\n들어 있는\n전자 껍질 수 A 1"
+  },
+  {
+    "id": "0",
+    "page": 55,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "0",
+      "scenario": "0 1 2 3 4 5 6 7\n원자가 전자 수\n이에 대한 설명으로 옳은 것은? (단,  는 임의의 원소 기호이다.)",
+      "visuals": [
+        "p55_0.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": [
+        "①  의 양성자수는  이다. A￣D",
+        "② A와  는 금속 원2소이다.",
+        "③ A와 B는 화학적 성질이 비슷하다.",
+        "④ B와 C의 양성자수의 비는   :  이다.",
+        "⑤ C의 D수소 화합물을 물에 녹4이면7 염기성을 띤다.\nD"
+      ]
+    },
+    "full_text": "0 1 2 3 4 5 6 7\n원자가 전자 수\n이에 대한 설명으로 옳은 것은? (단,  는 임의의 원소 기호이다.)\n①  의 양성자수는  이다. A￣D\n② A와  는 금속 원2소이다.\n③ A와 B는 화학적 성질이 비슷하다.\n④ B와 C의 양성자수의 비는   :  이다.\n⑤ C의 D수소 화합물을 물에 녹4이면7 염기성을 띤다.\nD"
+  },
+  {
+    "id": "218",
+    "page": 55,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "218",
+      "scenario": "218 \n하 중 상상\n표는 원자 번호  번 이하인 원자  에 대한 자료를 나타낸 것\n이다. 20 A￣C I\n원자\n원자가 전자 수 A B C\n전자가 들어 있는 전자 껍질 수\n1/2 2 3/2 주기율표의 족 번호 ㉠",
+      "visuals": [
+        "p55_218.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "218 \n하 중 상상\n표는 원자 번호  번 이하인 원자  에 대한 자료를 나타낸 것\n이다. 20 A￣C I\n원자\n원자가 전자 수 A B C\n전자가 들어 있는 전자 껍질 수\n1/2 2 3/2 주기율표의 족 번호 ㉠"
+  },
+  {
+    "id": "2",
+    "page": 55,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "2",
+      "scenario": "16",
+      "visuals": [
+        "p55_2.png"
+      ],
+      "directive": "이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은?",
+      "propositions": "(단,  는 임의의 원소 기호이다.)\n<  A보￣기C  >\nㄱ. 양성자수는  이다.\nㄴ.  는  주기 원C소<이A다.\nㄷ. B㉠은2  이다.\n3",
+      "options": [
+        "① ㄱ",
+        "② ㄴ",
+        "③ ㄷ",
+        "④ ㄱ, ㄴ",
+        "⑤ ㄴ, ㄷ"
+      ]
+    },
+    "full_text": "2 16\n이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은? \n(단,  는 임의의 원소 기호이다.)\n<  A보￣기C  >\nㄱ. 양성자수는  이다.\nㄴ.  는  주기 원C소<이A다.\nㄷ. B㉠은2  이다.\n3\n① ㄱ  ② ㄴ    ③ ㄷ\n④ ㄱ, ㄴ  ⑤ ㄴ, ㄷ"
+  },
+  {
+    "id": "219",
+    "page": 55,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "219",
+      "scenario": "하 중 상상\n그림은 같은 원자에서 일어나는 전자의 이동을 나타낸 것이다.\n전자\n(가) (나)",
+      "visuals": [
+        "p55_219.png"
+      ],
+      "directive": "이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은?",
+      "propositions": "ㄱ. (가)에서 이동한 전자는 이동 전보다 에너지가 높아진다.\nㄴ. (나)에서 방출 스펙트럼이 나타난다.\nㄷ. 전자는 (가)보다 (나)에서 더 안정하다.",
+      "options": [
+        "① ㄴ",
+        "② ㄷ",
+        "③ ㄱ, ㄴ",
+        "④ ㄱ, ㄷ",
+        "⑤ ㄱ, ㄴ, ㄷ"
+      ]
+    },
+    "full_text": "219 \n하 중 상상\n그림은 같은 원자에서 일어나는 전자의 이동을 나타낸 것이다.\n전자\n(가) (나)\n이에 대한 설명으로 옳은 것만을 <보기>에서 있는 대로 고른 것은? \n<  보기  >\nㄱ. (가)에서 이동한 전자는 이동 전보다 에너지가 높아진다.\nㄴ. (나)에서 방출 스펙트럼이 나타난다.\nㄷ. 전자는 (가)보다 (나)에서 더 안정하다.\n① ㄴ  ② ㄷ    ③ ㄱ, ㄴ\n④ ㄱ, ㄷ  ⑤ ㄱ, ㄴ, ㄷ"
+  },
+  {
+    "id": "07",
+    "page": 55,
+    "unit": null,
+    "difficulty": null,
+    "question_type": null,
+    "content": {
+      "header": "07",
+      "scenario": "07 원자의 전자 배치 55",
+      "visuals": [
+        "p55_07.png"
+      ],
+      "directive": "",
+      "propositions": null,
+      "options": []
+    },
+    "full_text": "07 원자의 전자 배치 55"
+  }
+]
