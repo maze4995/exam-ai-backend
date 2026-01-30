@@ -10,7 +10,9 @@ from utils import strict_json_parse
 # --- Configuration ---
 TARGET_DIR = r"C:\Users\rlgus\Desktop\Hyun&Hyun\문제집 - 과학\내신\시험지 모음\1학기 기말고사"
 OUTPUT_DIR = "output_extraction"
-API_KEY = "AIzaSyALdvzQFlAU9L11iEX9bA6VPK3ovHKh8Xg"
+# DO NOT hardcode your API key here. Set an environment variable like:
+# $env:GEMINI_API_KEY = "your_key_here" in PowerShell
+API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_NEW_API_KEY_HERE")
 
 # Configure Gemini
 genai.configure(api_key=API_KEY)
@@ -21,36 +23,43 @@ def setup_directories():
         print(f"Created output directory: {OUTPUT_DIR}")
 
 def extract_content_with_vlm(image_path):
-    # print(f"Sending {image_path} to Gemini VLM...")
-    try:
-        pil_img = Image.open(image_path)
-        model = genai.GenerativeModel('gemini-flash-latest') 
-        # Using gemini-flash-latest might be more stable in some regions
-        # model = genai.GenerativeModel('gemini-flash-latest')
+    import time
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            pil_img = Image.open(image_path)
+            model = genai.GenerativeModel('gemini-3-flash-preview') 
 
-        prompt = """
-        이 이미지에서 각 '시험 문제'의 영역을 찾아서 텍스트와 좌표를 추출해줘.
-        
-        [지시사항]
-        1. 이미지 내의 모든 문제를 감지해. 문제 번호, 지문, 보기, 그림을 모두 포함하는 전체 영역(Bounding Box)을 잡아야 해.
-        2. 좌표는 [ymin, xmin, ymax, xmax] 형식으로, 0 에서 1000 사이의 정수 값(normalized coordinates * 1000)으로 반환해.
-        3. 필기(손글씨, 채점 마크)는 무시하고 인쇄된 텍스트만 추출해.
-        4. 수식은 LaTeX로 변환해.
-        5. 출력은 다음 JSON 형식 배열이어야 해:
-        [
-          {
-            "question_number": "1",
-            "box_2d": [ymin, xmin, ymax, xmax],
-            "question_text": "...",
-            "choices": ["1. ...", "2. ..."]
-          }
-        ]
-        """
-        
-        response = model.generate_content([prompt, pil_img])
-        return response.text
-    except Exception as e:
-        return f"Error during VLM extraction: {e}"
+            prompt = """
+            이 이미지에서 각 '시험 문제'의 영역을 찾아서 텍스트와 좌표를 추출해줘.
+            
+            [지시사항]
+            1. 이미지 내의 모든 문제를 감지해. 문제 번호, 지문, 보기, 그림을 모두 포함하는 전체 영역(Bounding Box)을 잡아야 해.
+            2. 좌표는 [ymin, xmin, ymax, xmax] 형식으로, 0 에서 1000 사이의 정수 값(normalized coordinates * 1000)으로 반환해.
+            3. 필기(손글씨, 채점 마크)는 무시하고 인쇄된 텍스트만 추출해.
+            4. 수식은 LaTeX로 변환해.
+            5. 출력은 다음 JSON 형식 배열이어야 해:
+            [
+              {
+                "question_number": "1",
+                "box_2d": [ymin, xmin, ymax, xmax],
+                "question_text": "...",
+                "choices": ["1. ...", "2. ..."]
+              }
+            ]
+            """
+            
+            response = model.generate_content([prompt, pil_img])
+            return response.text
+        except Exception as e:
+            err_msg = str(e)
+            if "429" in err_msg or "quota" in err_msg.lower():
+                print(f"Quota exceeded (429). Waiting 70s before retry {attempt+1}/{max_retries}...")
+                time.sleep(70)
+                continue
+            return f"Error during VLM extraction: {e}"
+    
+    return "Error during VLM extraction: Maximum retries exceeded for quota issue."
 
 def crop_and_save_exam_problems(image_path, extraction_result, output_base):
     problems = strict_json_parse(extraction_result)
@@ -128,12 +137,7 @@ def process_pdf(pdf_path):
         json_filename = f"extracted_{os.path.basename(img_path)}.json"
         json_path = os.path.join(exam_output_dir, json_filename)
         
-        if os.path.exists(json_path):
-            # Check if crops also exist? Assume yes for now or re-run if json exists
-            # To be thorough, we could re-run cropping if the crops folder is missing.
-            print(f"Skipping extraction for {os.path.basename(img_path)} (JSON exists)")
-            continue
-            
+        # User requested to start fresh, so we remove skip logic
         print(f"Processing Page {i+1}/{len(image_paths)}...")
         result = extract_content_with_vlm(img_path)
         
@@ -157,6 +161,10 @@ def main():
         
     pdf_files = [f for f in os.listdir(TARGET_DIR) if f.lower().endswith('.pdf')]
     print(f"Found {len(pdf_files)} PDF files in {TARGET_DIR}")
+    
+    # Limit to 10 exams as requested
+    pdf_files = pdf_files[:10]
+    print(f"Limiting processing to 10 PDF files as requested.")
     
     for i, pdf_file in enumerate(pdf_files):
         pdf_path = os.path.join(TARGET_DIR, pdf_file)
