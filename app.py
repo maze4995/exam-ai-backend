@@ -48,47 +48,75 @@ async def get_exam_problems(exam_name: str):
     # 1. Look for all extracted_*.png.json files
     json_files = [f for f in os.listdir(exam_path) if f.startswith("extracted_") and f.endswith(".json")]
     
+    # Sort by page number using a helper
+    def get_page_num(fname):
+        try:
+            # extracted_page_2.png.json -> 2
+            return int(fname.split("_")[2].split(".")[0])
+        except:
+            return 999
+    
+    json_files.sort(key=get_page_num)
+    
+    print(f"Loading exam {exam_name}: Found {len(json_files)} JSON files")
+
     for jf in json_files:
         # Correspond to page name: extracted_page_2.png.json -> page_2
         page_name = jf.replace("extracted_", "").replace(".png.json", "")
         
         json_full_path = os.path.join(exam_path, jf)
-        with open(json_full_path, "r", encoding="utf-8") as f:
-            content = f.read()
-        
-        problems = strict_json_parse(content)
-        if not problems:
-            continue
+        try:
+            with open(json_full_path, "r", encoding="utf-8") as f:
+                content = f.read()
             
-        for prob in problems:
-            content = prob.get("content", {})
-            q_header = content.get("header") or prob.get("question_number") or "unknown"
+            problems = strict_json_parse(content)
+            if not problems:
+                print(f"  Warning: No problems returned from {jf}")
+                continue
+                
+            print(f"  Loaded {len(problems)} problems from {jf}")
+                
+            for prob in problems:
+                content = prob.get("content", {})
+                q_header = content.get("header") or prob.get("question_number") or "unknown"
+                
+                # Construct crop image path
+                page_name = jf.replace("extracted_", "").replace(".png.json", "")
+                crop_rel_dir = f"crops_{page_name}"
+                # Extract numbers for matching filename
+                import re
+                q_num_clean = re.sub(r'[^0-9]', '', str(q_header)) or "None"
+                crop_filename = f"q_{q_num_clean}.png"
+                crop_path = f"/images/{exam_name}/{crop_rel_dir}/{crop_filename}"
+                
+                # Add to list with detailed metadata
+                all_problems.append({
+                    "id": f"{exam_name}_{page_name}_{q_header}",
+                    "page": page_name,
+                    "header": q_header,
+                    "scenario": content.get("scenario"),
+                    "charts": content.get("charts", []),
+                    "visual_elements": content.get("visual_elements", []),
+                    "visuals": content.get("visuals", []), # Legacy
+                    "directive": content.get("directive", ""),
+                    "propositions": content.get("propositions"),
+                    "options": content.get("options", []),
+                    "image_url": crop_path,
+                    "box_2d": prob.get("box_2d", [])
+                })
+        except Exception as e:
+            print(f"  Error loading {jf}: {e}")
             
-            # Construct crop image path
-            page_name = jf.replace("extracted_", "").replace(".png.json", "")
-            crop_rel_dir = f"crops_{page_name}"
-            # Extract numbers for matching filename
-            import re
-            q_num_clean = re.sub(r'[^0-9]', '', str(q_header)) or "None"
-            crop_filename = f"q_{q_num_clean}.png"
-            crop_path = f"/images/{exam_name}/{crop_rel_dir}/{crop_filename}"
+    # Sort all problems by page number then header number
+    def sort_key(p):
+        try:
+            pg = int(p["page"].replace("page_", ""))
+            hd = int(re.sub(r'[^0-9]', '', str(p["header"])))
+            return (pg, hd)
+        except:
+            return (999, 999)
             
-            # Add to list with detailed metadata
-            all_problems.append({
-                "id": f"{exam_name}_{page_name}_{q_header}",
-                "page": page_name,
-                "header": q_header,
-                "scenario": content.get("scenario"),
-                "charts": content.get("charts", []),
-                "visual_elements": content.get("visual_elements", []),
-                "visuals": content.get("visuals", []), # Legacy
-                "directive": content.get("directive", ""),
-                "propositions": content.get("propositions"),
-                "options": content.get("options", []),
-                "image_url": crop_path,
-                "box_2d": prob.get("box_2d", [])
-            })
-            
+    all_problems.sort(key=sort_key)
     return all_problems
 
 # Mount the output directory to serve images
