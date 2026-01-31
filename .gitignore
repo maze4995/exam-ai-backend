@@ -49,3 +49,5 @@ handwriting-remover/data/output/
 # IDE settings
 .vscode/
 .idea/
+
+.env

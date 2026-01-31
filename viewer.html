@@ -234,9 +234,107 @@
                 </div>
                 <div class="px-6 py-4 bg-slate-900/50 border-t border-slate-700/50 flex justify-between items-center text-[10px]">
                     <span class="text-slate-600 font-mono">BBOX: [${prob.box_2d ? prob.box_2d.join(', ') : ''}]</span>
+                    <button onclick='generateVariation(${JSON.stringify(prob).replace(/'/g, "&apos;")}, this)' class="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full transition-all shadow-lg hover:shadow-purple-500/30 font-bold uppercase tracking-tighter flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 9a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zm7-10a1 1 0 01.707.293l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L14.586 5H7a1 1 0 00-1 1v6H4V6a3 3 0 013-3h7.586l-1.293-1.293A1 1 0 0112 1z" clip-rule="evenodd" /></svg>
+                        Magic
+                    </button>
                 </div>
             `;
             return div;
+        }
+
+        async function generateVariation(prob, btn) {
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-3 w-3 mr-1" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Generating...`;
+
+            try {
+                const res = await fetch('/api/generate-variation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(prob)
+                });
+                const data = await res.json();
+
+                if (data.reconstruction_type === 'error') throw new Error(data.reconstruction_code);
+
+                // Create Result Modal/Card expansion
+                const cardBody = btn.closest('.problem-card').querySelector('.flex-1');
+
+                const variationDiv = document.createElement('div');
+                variationDiv.className = 'mt-6 pt-6 border-t-2 border-dashed border-purple-500/30 animate-pulse';
+                variationDiv.innerHTML = `
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="px-2 py-1 bg-purple-500/20 text-purple-300 rounded text-xs font-bold border border-purple-500/50">✨ Gemini 3 Variation</span>
+                    </div>
+                `;
+
+                // 1. Render Reconstruction (SVG Only)
+                if (data.reconstruction_type === 'svg') {
+                    // Clean SVG string
+                    let svgContent = data.reconstruction_code;
+                    if (svgContent.includes('```svg')) svgContent = svgContent.split('```svg')[1].split('```')[0];
+                    if (svgContent.includes('```xml')) svgContent = svgContent.split('```xml')[1].split('```')[0];
+
+                    variationDiv.innerHTML += `
+                        <div class="bg-white p-4 rounded-2xl shadow-inner border border-purple-200 mb-6 overflow-hidden flex justify-center">
+                            ${svgContent}
+                        </div>
+                    `;
+                }
+                // We purposefully do NOT render python code or 'none' types here.
+
+                // 2. Render Text Variation
+                const vp = data.variation_problem;
+                if (vp) {
+                    variationDiv.innerHTML += `
+                        <div class="space-y-4">
+                            ${vp.scenario ? `<div class="bg-slate-800/30 p-4 rounded-2xl border border-slate-700/30"><p class="text-sm text-slate-300 italic content-text">${vp.scenario}</p></div>` : ''}
+                            
+                            ${vp.table ? `
+                            <div class="overflow-x-auto rounded-xl shadow-lg border border-slate-700/50 bg-slate-900/50 p-2">
+                                ${marked.parse(vp.table)}
+                            </div>` : ''
+                        }
+
+                    <div class="ps-1">
+                        <h3 class="text-lg font-semibold text-purple-200 leading-tight content-text">${vp.directive || 'No directive'}</h3>
+                    </div>
+                            
+                            ${vp.propositions ? `
+                            <div class="relative p-5 bg-slate-900/50 rounded-2xl border-2 border-slate-700/50 mt-4">
+                                <p class="text-sm text-slate-300 content-text" style="white-space: pre-wrap;">${vp.propositions}</p>
+                            </div>` : ''
+                        }
+
+                    <div class="grid grid-cols-1 gap-2 mt-4">
+                        ${(vp.options || []).map(opt => `
+                                    <div class="text-xs text-slate-400 bg-slate-800/50 px-3 py-2 rounded-xl border border-slate-700/50 shadow-sm content-text text-left">
+                                        ${opt}
+                                    </div>
+                                `).join('')}
+                    </div>
+                        </div >
+                        `;
+                } else {
+                    variationDiv.innerHTML += `< div class="text-slate-400 text-xs italic" > No variation text generated.</div >`;
+                }
+
+                variationDiv.classList.remove('animate-pulse');
+                cardBody.appendChild(variationDiv);
+
+                // Re-run MathJax on the new content
+                if (window.MathJax) {
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, variationDiv]);
+                }
+
+                btn.innerHTML = "✨ Done";
+            } catch (e) {
+                console.error(e);
+                alert("Generation failed: " + e.message);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         fetchExams();

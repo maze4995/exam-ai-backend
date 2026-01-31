@@ -1,45 +1,49 @@
-
-import os
-import sys
-import time
-from pyngrok import ngrok, conf
 import subprocess
+import time
+import sys
 
 def start_sharing():
-    print("--- AI Exam Viewer Sharing Tool ---")
-    
-    # 1. Ensure app.py is running
-    # We won't restart it here to avoid conflicts, but we assume it's running on 8000.
-    # If not, the user should run app.py first. 
-    # But for convenience, let's check port 8000? 
-    # Actually, simpler to just tunnel.
-    
-    # 2. Setup ngrok
-    # If user has an auth token, they can set it via command line: ngrok config add-authtoken <token>
-    # But for anonymous use (limited duration), it works out of the box usually.
+    print("--- AI Exam Viewer Sharing Tool (via localtunnel) ---")
+    print("Starting localtunnel on port 8000...")
     
     try:
-        # Open a HTTP tunnel on the default port 8000
-        # The 'http' protocol is what we need for web viewing
-        public_url = ngrok.connect(8000).public_url
+        # Run npx localtunnel
+        # We use shell=True to find npx in path
+        process = subprocess.Popen(["npx", "localtunnel", "--port", "8000"], 
+                                   stdout=subprocess.PIPE, 
+                                   stderr=subprocess.PIPE, 
+                                   text=True,
+                                   shell=True)
         
-        print("\n" + "="*60)
-        print(f" ONLINE! Your viewer is available at:")
-        print(f" {public_url}")
-        print("="*60 + "\n")
-        print("Share this URL with anyone you want to show the viewer to.")
-        print("Press Ctrl+C to stop sharing.")
-        
-        # Keep the script running
+        print("Waiting for tunnel URL...")
         while True:
-            time.sleep(1)
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
+                if "your url is:" in output.lower():
+                    print("\n" + "="*60)
+                    print(f" SHARE THIS URL: {output.strip().split('is: ')[-1]}")
+                    print(f" Password (if asked): {get_password()}")
+                    print("="*60 + "\n")
+                    
+            time.sleep(0.1)
             
     except KeyboardInterrupt:
-        print("\nShutting down tunnel...")
-        ngrok.kill()
+        print("\nStopping sharing...")
+        process.terminate()
     except Exception as e:
-        print(f"\nError: {e}")
-        print("Note: If you haven't authenticated ngrok, sessions are limited to 2 hours.")
+        print(f"Error: {e}")
+
+def get_password():
+    try:
+        # Retrieve the tunnel password (public IP)
+        import urllib.request
+        with urllib.request.urlopen('https://loca.lt/mytunnelpassword') as response:
+            return response.read().decode('utf-8').strip()
+    except:
+        return "Check https://loca.lt/mytunnelpassword"
 
 if __name__ == "__main__":
     start_sharing()
