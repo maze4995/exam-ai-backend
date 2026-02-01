@@ -3,7 +3,7 @@ uvicorn
 python-dotenv
 pydantic
 pymupdf
-opencv-python-headless
+opencv-python-headless==4.8.0.74
 numpy
 google-generativeai
 Pillow
