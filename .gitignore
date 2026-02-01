@@ -16,3 +16,14 @@ input_pdfs/
 *.onnx
 _archive/
 models/
+
+# Frontend / Mobile
+node_modules/
+client/node_modules/
+client/android/build/
+client/android/app/build/
+client/android/.gradle/
+client/android/local.properties
+client/ios/App/App.xcodeproj/project.xcworkspace/
+client/ios/App/App.xcodeproj/xcuserdata/
+client/ios/DerivedData/

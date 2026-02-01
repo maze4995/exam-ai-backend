@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ExamAI</string>
+    <string name="title_activity_main">ExamAI</string>
+    <string name="package_name">com.hyunandhyun.examai</string>
+    <string name="custom_url_scheme">com.hyunandhyun.examai</string>
+</resources>

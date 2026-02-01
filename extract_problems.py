@@ -137,7 +137,8 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
             
     return problems
 
-def process_pdf(pdf_path):
+def process_pdf(pdf_path, progress_callback=None):
+    if progress_callback: progress_callback("Initializing...", 0)
     print(f"\n--- Processing: {os.path.basename(pdf_path)} ---")
     pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
     
@@ -165,6 +166,7 @@ def process_pdf(pdf_path):
         image_paths.append(img_path)
     
     print(f"Total pages: {len(image_paths)}")
+    if progress_callback: progress_callback(f"Converted PDF to {len(image_paths)} images.", 10)
     
     import time
     # Skip cover page if it has many pages
@@ -175,6 +177,10 @@ def process_pdf(pdf_path):
         json_filename = f"extracted_{os.path.basename(img_path)}.json"
         json_path = os.path.join(exam_output_dir, json_filename)
         
+        if progress_callback:
+            percent = 10 + int((i / len(image_paths)) * 90)
+            progress_callback(f"Analyzing Page {i+1}/{len(image_paths)} (AI Extraction)...", percent)
+
         # User requested to start fresh, so we remove skip logic
         print(f"Processing Page {i+1}/{len(image_paths)}...")
         result = extract_content_with_vlm(img_path)
@@ -193,6 +199,7 @@ def process_pdf(pdf_path):
             
         # Rate limit handling (free tier usually has small RPM)
         print("Waiting 35s for rate limit...")
+        if progress_callback: progress_callback(f"Waiting 35s for Gemini API quota...", percent)
         time.sleep(35)
         
     doc.close()

@@ -316,8 +316,25 @@ async def generate_variation(req: VariationRequest):
             }
         }
 
-# --- PDF Upload Feature ---
+# --- PDF Upload & Progress ---
 from fastapi import UploadFile, File, BackgroundTasks
+
+# Simple in-memory progress store: { "filename": { "status": "msg", "percent": 0, "done": False } }
+processing_status = {}
+
+@app.get("/api/progress/{filename}")
+async def get_progress(filename: str):
+    """Get the current processing status of a file."""
+    # Try exact match first
+    if filename in processing_status:
+        return processing_status[filename]
+        
+    # Try matching without extension if needed
+    for k, v in processing_status.items():
+        if filename in k or k in filename:
+            return v
+            
+    return {"status": "Not found", "percent": 0, "done": False}
 
 @app.post("/api/upload")
 async def upload_pdf(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
@@ -346,16 +363,24 @@ async def upload_pdf(background_tasks: BackgroundTasks, file: UploadFile = File(
         print(f"File uploaded: {file_path}")
         
         # 3. Trigger Background Processing
+        # Initialize progress
+        processing_status[safe_filename] = {"status": "Starting...", "percent": 0, "done": False}
+
         # We wrap process_pdf to catch errors without crashing app
-        def safe_process(path):
+        def safe_process(path, fname):
+            def update_progress(msg, pct):
+                processing_status[fname] = {"status": msg, "percent": pct, "done": False}
+                
             try:
                 print(f"Starting background processing for {path}")
-                process_pdf(path)
+                process_pdf(path, progress_callback=update_progress)
                 print(f"Finished background processing for {path}")
+                processing_status[fname] = {"status": "Complete!", "percent": 100, "done": True}
             except Exception as e:
                 print(f"Background processing failed for {path}: {e}")
+                processing_status[fname] = {"status": f"Error: {str(e)}", "percent": 0, "done": True}
                 
-        background_tasks.add_task(safe_process, file_path)
+        background_tasks.add_task(safe_process, file_path, safe_filename)
         
         return {"filename": safe_filename, "message": "Upload successful. Processing started in background."}
         
