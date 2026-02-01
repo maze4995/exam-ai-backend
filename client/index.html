@@ -1247,14 +1247,22 @@
                 btn.innerHTML = `<svg class="animate-spin h-4 w-4 inline mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Processing PDF...`;
 
                 statusDiv.innerHTML = `
-                    <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-700 space-y-2">
-                        <div class="text-green-400 font-bold flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
-                            Upload Complete!
+                    <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-700 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="text-green-400 font-bold flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                Upload Complete
+                            </div>
+                            <span class="text-xs text-slate-500">Processing ${filename}</span>
                         </div>
-                        <p class="text-slate-400 text-xs">Now extracting problems from <b>${filename}</b>.<br>This usually takes 30-60 seconds.</p>
-                        <div class="w-full bg-slate-900 rounded-full h-1.5 mt-2 overflow-hidden">
-                            <div class="bg-indigo-500 h-1.5 rounded-full animate-progress-indeterminate w-full origin-left-right"></div>
+                        
+                        <div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                            <div id="upload-progress-bar" class="bg-indigo-500 h-2.5 rounded-full transition-all duration-300" style="width: 5%"></div>
+                        </div>
+                        
+                        <div class="flex justify-between text-xs">
+                             <span id="upload-progress-text" class="text-slate-300">Initializing AI...</span>
+                             <span class="text-slate-500 animate-pulse">Running in background</span>
                         </div>
                     </div>
                 `;
