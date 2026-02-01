@@ -1,53 +1,18 @@
-# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual Environment
+*.pyc
+.env
 .venv/
-venv/
-ENV/
+env/
+output_extraction/
+input_pdfs/
+*.log
+.DS_Store
+.idea/
+.vscode/
 
-# Pytorch Models & Checkpoints
+# Large AI Models and Archives
 *.pth
 *.pt
-checkpoints/
-checkpoints_science/
-checkpoints_science_gpu/
-
-# Large Data & Outputs
-output_extraction/
-science-problem-dataset-builder/output/
-science-problem-dataset-builder/training_data/
-handwriting-remover/data/input/
-handwriting-remover/data/output/
-
-# Images & PDFs
-*.png
-*.jpg
-*.jpeg
-*.pdf
-
-# IDE settings
-.vscode/
-.idea/
-
-.env
+*.onnx
+_archive/
+models/

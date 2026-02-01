@@ -1,12 +1,17 @@
-
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import json
-from typing import List, Dict
+from typing import List, Dict, Union, Any
 import uvicorn
 from utils import strict_json_parse
+from extract_problems import process_pdf # Import extraction logic
+from pydantic import BaseModel
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv(override=True)
 
 app = FastAPI(title="AI Exam Dataset Viewer")
 
@@ -74,8 +79,6 @@ async def get_exam_problems(exam_name: str):
                 print(f"  Warning: No problems returned from {jf}")
                 continue
                 
-            print(f"  Loaded {len(problems)} problems from {jf}")
-                
             for prob in problems:
                 content = prob.get("content", {})
                 q_header = content.get("header") or prob.get("question_number") or "unknown"
@@ -120,35 +123,17 @@ async def get_exam_problems(exam_name: str):
     return all_problems
 
 # Mount the output directory to serve images
-# Access via /images/ExamName/crops_page_X/q_Y.png
-
-# Mount the output directory to serve images
-# Access via /images/ExamName/crops_page_X/q_Y.png
 app.mount("/images", StaticFiles(directory=OUTPUT_DIR), name="images")
 
 import google.generativeai as genai
 from PIL import Image
-from pydantic import BaseModel
-
-import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file explicitly
-load_dotenv(override=True)
 
 # Configure Gemini
 api_key = os.getenv("GEMINI_API_KEY")
-
 print(f"DEBUG: Startup - API Key Status: {'SET' if api_key else 'MISSING'}")
 
 if api_key:
     genai.configure(api_key=api_key)
-
-from typing import List, Dict, Any, Union
-import uvicorn
-from utils import strict_json_parse
-
-# ... (existing code)
 
 class VariationRequest(BaseModel):
     header: Union[str, int, float] = None
@@ -292,7 +277,18 @@ async def generate_variation(req: VariationRequest):
         elif json_str.startswith("```"):
              json_str = json_str[3:-3].strip()
             
-        result = json.loads(json_str)
+        # Robust JSON Cleaning: Escape backslashes that aren't already escaped
+        try:
+            import re
+            json_str = re.sub(r'\\(?![/u"bfnrt\\])', r'\\\\', json_str)
+            result = json.loads(json_str)
+        except json.JSONDecodeError as e:
+            print(f"[JSON Error] Failed to parse: {e}")
+            return {
+                "reconstruction_type": "error",
+                "reconstruction_code": f"JSON Parsing Failed: {str(e)}",
+                "variation_problem": None
+            }
         
         # Validate structure
         if "variation_problem" not in result:
@@ -309,9 +305,8 @@ async def generate_variation(req: VariationRequest):
 
     except Exception as e:
         import traceback
-        traceback.print_exc() # Print full stack trace to server logs
+        traceback.print_exc()
         print(f"Generation Critical Error: {e}")
-        # Build a safe fallback error for frontend
         return {
             "reconstruction_type": "error",
             "reconstruction_code": f"Server Error: {str(e)}",
@@ -321,12 +316,70 @@ async def generate_variation(req: VariationRequest):
             }
         }
 
+# --- PDF Upload Feature ---
+from fastapi import UploadFile, File, BackgroundTasks
+
+@app.post("/api/upload")
+async def upload_pdf(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    """
+    Handle PDF upload and trigger background processing.
+    """
+    try:
+        # 1. Validate
+        if not file.filename.lower().endswith('.pdf'):
+            raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
+            
+        # 2. Save to input directory
+        input_dir = "input_pdfs"
+        if not os.path.exists(input_dir):
+            os.makedirs(input_dir)
+            
+        # Sanitize filename
+        import re
+        safe_filename = re.sub(r'[^a-zA-Z0-9_\-\.가-힣]', '_', file.filename)
+        file_path = os.path.join(input_dir, safe_filename)
+        
+        with open(file_path, "wb") as buffer:
+            import shutil
+            shutil.copyfileobj(file.file, buffer)
+            
+        print(f"File uploaded: {file_path}")
+        
+        # 3. Trigger Background Processing
+        # We wrap process_pdf to catch errors without crashing app
+        def safe_process(path):
+            try:
+                print(f"Starting background processing for {path}")
+                process_pdf(path)
+                print(f"Finished background processing for {path}")
+            except Exception as e:
+                print(f"Background processing failed for {path}: {e}")
+                
+        background_tasks.add_task(safe_process, file_path)
+        
+        return {"filename": safe_filename, "message": "Upload successful. Processing started in background."}
+        
+    except Exception as e:
+        print(f"Upload failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+
 # Serve the frontend as a single file for now
 @app.get("/")
 async def get_index():
     from fastapi.responses import HTMLResponse
     with open("viewer.html", "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
+
+@app.get("/manifest.json")
+async def get_manifest():
+    from fastapi.responses import FileResponse
+    return FileResponse("manifest.json", media_type="application/manifest+json")
+
+@app.get("/icon.png")
+async def get_icon():
+    from fastapi.responses import FileResponse
+    return FileResponse("icon.png", media_type="image/png")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

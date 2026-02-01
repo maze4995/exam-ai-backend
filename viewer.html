@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Exam Dataset Viewer</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon.png">
+    <meta name="theme-color" content="#0f172a">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
     <script type="text/x-mathjax-config">
@@ -79,42 +82,516 @@
             color: #60a5fa;
             font-weight: 600;
         }
+
+        /* --- Layout Modes --- */
+
+        /* 1. Classic (Default) - No extra CSS needed */
+
+        /* 2. Focus Mode (TikTok Style) */
+        .layout-focus:not(.hidden) {
+            display: flex !important;
+            flex-direction: column;
+            gap: 0;
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            padding-bottom: 0 !important;
+            /* Remove bottom padding */
+        }
+
+        .layout-focus .problem-card {
+            flex: 0 0 100%;
+            height: 100%;
+            scroll-snap-align: start;
+            border-radius: 0;
+            /* Full screen feel */
+            border: none;
+            background: #0f172a;
+            /* Darker bg */
+        }
+
+        .layout-focus .problem-card .flex-1 {
+            overflow-y: auto;
+            /* Internal content scroll */
+        }
+
+        /* 3. Compact Grid (Pinterest Style) */
+        .layout-compact:not(.hidden) {
+            display: block !important;
+            column-count: 2;
+            column-gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .layout-compact {
+                column-count: 3;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .layout-compact {
+                column-count: 4;
+            }
+        }
+
+        .layout-compact .problem-card {
+            break-inside: avoid;
+            margin-bottom: 1rem;
+            transform: none !important;
+            /* Disable hover float for performance */
+        }
+
+        .layout-compact .problem-card:hover {
+            transform: translateY(-2px) !important;
+        }
     </style>
 </head>
 
-<body class="h-screen flex overflow-hidden">
-    <!-- Sidebar -->
-    <aside class="w-80 h-full glass flex flex-col border-r border-slate-700">
-        <div class="p-6 border-b border-slate-700">
-            <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
-                Exam Dataset Viewer</h1>
-            <p class="text-xs text-slate-400 mt-1">AI Problem Extraction Result</p>
+<body class="h-screen flex flex-col md:flex-row overflow-hidden bg-slate-900">
+
+
+
+    <!-- Landing Page -->
+    <div id="landing-page"
+        class="fixed inset-0 z-[60] bg-slate-900 flex flex-col items-center justify-center p-4 space-y-4">
+        <div class="text-center space-y-3">
+            <img src="icon.png" class="w-20 h-20 rounded-2xl shadow-2xl mx-auto mb-4">
+            <h1 class="text-3xl font-bold text-white tracking-tight">ExamAI</h1>
+            <p class="text-slate-400 text-xs">Select a mode to begin</p>
+            <button onclick="openHelpModal()"
+                class="text-xs text-blue-400 hover:text-blue-300 underline mt-2 flex items-center justify-center gap-1 mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                처음이신가요? 사용 가이드 보기
+            </button>
         </div>
-        <div id="exam-list" class="flex-1 overflow-y-auto p-4 space-y-2">
-            <div class="animate-pulse flex space-y-3 flex-col">
-                <div class="h-10 bg-slate-700 rounded w-full"></div>
-                <div class="h-10 bg-slate-700 rounded w-full"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+            <!-- View Mode Button -->
+            <button onclick="startApp('view')"
+                class="group relative bg-slate-800/50 hover:bg-blue-600/10 border border-slate-700 hover:border-blue-500 rounded-3xl p-8 transition-all duration-300 flex flex-col items-center text-center space-y-4">
+                <div class="p-4 bg-blue-500/20 text-blue-400 rounded-full group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-2">문제 탐색 (Viewer)</h3>
+                    <p class="text-sm text-slate-400">데이터셋에서 추출된 문제들을<br>확인하고 공부합니다.</p>
+                </div>
+            </button>
+
+            <!-- Generate Mode Button -->
+            <button onclick="startApp('generate')"
+                class="group relative bg-slate-800/50 hover:bg-purple-600/10 border border-slate-700 hover:border-purple-500 rounded-3xl p-8 transition-all duration-300 flex flex-col items-center text-center space-y-4">
+                <div
+                    class="p-4 bg-purple-500/20 text-purple-400 rounded-full group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-2">AI 문제 생성</h3>
+                    <p class="text-sm text-slate-400">Gemini 3를 사용하여<br>새로운 유사 문제와 그림을 생성합니다.</p>
+                </div>
+            </button>
+        </div>
+
+        <!-- Mobile Preview Button (Main Screen) -->
+        <button onclick="openMobilePreview()"
+            class="mt-8 px-6 py-3 glass rounded-full hover:bg-pink-500/10 transition text-sm flex items-center gap-2 text-pink-400 border border-pink-500/30 shadow-lg shadow-pink-900/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            Mobile Preview (390x844)
+        </button>
+
+        <!-- Upload Modal / Container (Initially Hidden) -->
+
+
+        <!-- App Wrapper (Hidden by default) -->
+    </div> <!-- Close Landing Page -->
+
+    <!-- Upload Modal / Container (Initially Hidden) -->
+    <div id="upload-modal"
+        class="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl w-full max-w-md overflow-hidden relative">
+            <!-- Close Button -->
+            <button onclick="closeUploadModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="p-8 text-center space-y-6">
+                <div class="bg-blue-500/20 p-4 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-2">Upload Exam PDF</h3>
+                    <p class="text-sm text-slate-400">Select a PDF file to analyze. The AI will extract problems in the
+                        background.</p>
+                </div>
+
+                <form id="upload-form" class="space-y-4">
+                    <label class="block w-full cursor-pointer group">
+                        <div
+                            class="w-full border-2 border-dashed border-slate-700 group-hover:border-blue-500 rounded-xl p-6 transition flex flex-col items-center gap-2">
+                            <span class="text-slate-400 text-sm group-hover:text-blue-400 transition"
+                                id="file-label">Click to select PDF</span>
+                        </div>
+                        <input type="file" name="file" accept=".pdf" class="hidden"
+                            onchange="document.getElementById('file-label').textContent = this.files[0] ? this.files[0].name : 'Click to select PDF'">
+                    </label>
+
+                    <button type="submit"
+                        class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-600/20">
+                        Start Processing
+                    </button>
+                </form>
+
+                <div id="upload-status" class="hidden text-xs text-center"></div>
             </div>
         </div>
-    </aside>
+    </div>
 
-    <!-- Main Content -->
-    <main class="flex-1 h-full overflow-y-auto p-8 bg-slate-900">
-        <header class="mb-8 flex justify-between items-center">
-            <div>
-                <h2 id="current-exam-title" class="text-3xl font-bold text-white">Select an Exam</h2>
-                <div class="flex gap-4 mt-2">
-                    <span id="stat-count" class="px-2 py-1 glass rounded text-xs text-blue-300">0 Problems found</span>
+    <!-- Help Modal (Guide) -->
+    <div id="help-modal"
+        class="fixed inset-0 z-[80] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-slate-900 rounded-3xl border border-slate-700 shadow-2xl w-full max-w-2xl overflow-hidden relative max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-500/20 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">ExamAI 사용 가이드</h2>
+                        <p class="text-xs text-slate-400">주요 기능 빠르고 쉽게 알아보기</p>
+                    </div>
+                </div>
+                <button onclick="closeHelpModal()"
+                    class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 overflow-y-auto space-y-8">
+                <!-- Section 1: Modes -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider">두 가지 메인 모드</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+                            <div class="flex items-center gap-2 mb-2 text-white font-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                뷰어 모드 (Viewer)
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                추출된 모든 문제를 탐색합니다. 오른쪽 상단의 레이아웃 버튼으로 보기 방식을 변경할 수 있습니다.
+                            </p>
+                        </div>
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+                            <div class="flex items-center gap-2 mb-2 text-white font-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                AI 생성 (Generator)
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                시험지를 선택한 후 "Generate" 버튼을 누르세요. AI가 <b>비슷한 유형의 새로운 문제</b>를 만들고, 흐릿한 그림을 <b>선명하게</b> 다시
+                                그려줍니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Layouts -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold text-green-400 uppercase tracking-wider">레이아웃 옵션</h3>
+                    <ul class="space-y-2 text-sm text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <span class="bg-slate-800 p-1 rounded text-slate-400"><svg
+                                    xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                </svg></span>
+                            <div><strong class="text-white">기본형 (Classic)</strong>: 일반적인 수직 스크롤 방식입니다. 꼼꼼히 읽을 때 좋습니다.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="bg-slate-800 p-1 rounded text-slate-400"><svg
+                                    xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                </svg></span>
+                            <div><strong class="text-white">집중 모드 (Focus)</strong>: 틱톡/쇼츠 스타일입니다. 한 번에 한 문제씩 화면에 꽉 차게
+                                보여줍니다. 문제 풀이에 최적!</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="bg-slate-800 p-1 rounded text-slate-400"><svg
+                                    xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                </svg></span>
+                            <div><strong class="text-white">그리드형 (Compact)</strong>: 핀터레스트 스타일입니다. 작은 카드로 여러 문제를 한눈에 훑어볼
+                                수 있습니다.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section 3: Upload -->
+                <div
+                    class="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-4 flex gap-4 items-center">
+                    <div class="bg-blue-600/20 p-3 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm">새로운 시험지 업로드</h4>
+                        <p class="text-xs text-slate-400 mt-1">
+                            사이드바의 <b>"Upload Exam PDF"</b> 버튼을 눌러 새 시험지를 추가하세요.
+                            처리는 백그라운드에서 진행됩니다 (페이지당 약 30초).
+                            처리가 끝나면 <b>Refresh</b> 버튼을 눌러 확인하세요.
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="refreshData()"
-                    class="px-4 py-2 glass rounded-lg hover:bg-slate-700 transition text-sm">Refresh</button>
+
+            <div class="p-6 border-t border-slate-800 bg-slate-900/50 text-center">
+                <button onclick="closeHelpModal()"
+                    class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition shadow-lg shadow-indigo-500/20 w-full md:w-auto">
+                    알겠습니다!
+                </button>
             </div>
+        </div>
+    </div>
+
+    <!-- App Wrapper -->
+    <div id="main-app" class="hidden h-full w-full flex-col md:flex-row">
+        <!-- Mobile Header -->
+        <header class="md:hidden flex items-center justify-between p-4 glass border-b border-slate-700 z-40">
+            <div class="flex items-center gap-2">
+                <img src="icon.png" class="w-8 h-8 rounded-lg shadow-lg">
+                <h1 class="text-lg font-bold text-white">ExamAI Viewer</h1>
+            </div>
+            <button onclick="toggleSidebar()" class="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
         </header>
 
-        <div id="problems-grid" class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6"></div>
-    </main>
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 md:glass border-r border-slate-700 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:static md:h-full flex flex-col shadow-2xl md:shadow-none h-full">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <div class="cursor-pointer" onclick="goHome()">
+                    <!-- Back to Home functionality added to header -->
+                    <div class="flex items-center gap-2 md:hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm font-bold text-slate-300">Home</span>
+                    </div>
+                    <h1
+                        class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent hidden md:block group-hover:opacity-80 transition">
+                        ExamAI Viewer
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-1 hidden md:block" id="app-mode-label">Mode: Viewing</p>
+                </div>
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div id="exam-list" class="flex-1 overflow-y-auto p-4 space-y-2 pb-20 md:pb-4">
+                <!-- Exam items will be injected here -->
+                <div class="animate-pulse flex space-y-3 flex-col">
+                    <div class="h-10 bg-slate-800/50 rounded w-full"></div>
+                    <div class="h-10 bg-slate-800/50 rounded w-full"></div>
+                </div>
+            </div>
+            <!-- Desktop Home Button -->
+            <div class="p-4 border-t border-slate-700 hidden md:block space-y-2">
+                <button onclick="openUploadModal()"
+                    class="w-full py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-lg text-sm flex items-center justify-center gap-2 transition shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Upload Exam PDF
+                </button>
+                <button onclick="goHome()"
+                    class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm flex items-center justify-center gap-2 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    Back to Home
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main
+            class="flex-1 h-full overflow-y-auto overflow-x-hidden p-6 md:p-10 bg-slate-900 relative w-full flex flex-col pt-16 md:pt-10">
+            <header class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="md:hidden p-2 glass rounded-lg text-slate-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <div>
+                        <h2 id="current-exam-title" class="text-2xl md:text-3xl font-bold text-white leading-tight">
+                            Select an Exam</h2>
+                        <div class="flex gap-4 mt-2 items-center">
+                            <span id="stat-count" class="px-2 py-1 glass rounded text-xs text-blue-300">0 Problems
+                                found</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 self-end md:self-auto" id="view-mode-controls">
+
+                    <button onclick="refreshData()"
+                        class="px-4 py-2 glass rounded-lg hover:bg-slate-700 transition text-sm flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Refresh
+                    </button>
+                    <!-- Layout Switcher -->
+                    <div class="glass rounded-lg p-1 flex gap-1">
+                        <button onclick="setLayout('classic')" id="btn-layout-classic"
+                            class="p-2 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition"
+                            title="Classic View">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                            </svg>
+                        </button>
+                        <button onclick="setLayout('focus')" id="btn-layout-focus"
+                            class="p-2 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition"
+                            title="Focus Mode">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                            </svg>
+                        </button>
+                        <button onclick="setLayout('compact')" id="btn-layout-compact"
+                            class="p-2 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition"
+                            title="Compact Grid">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Generator Mode specific controls -->
+                <div id="gen-mode-controls" class="hidden gap-2 self-end md:self-auto">
+                    <button onclick="goHome()"
+                        class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm flex items-center gap-2 text-slate-300 border border-slate-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                        Home
+                    </button>
+                </div>
+            </header>
+
+            <!-- Mode: Viewer -->
+            <div id="problems-grid" class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6 pb-20">
+            </div>
+
+            <!-- Mode: Generator (Hidden by default) -->
+            <div id="generator-container"
+                class="hidden flex-1 flex flex-col items-center justify-start py-10 w-full max-w-4xl mx-auto space-y-8">
+
+                <!-- Action Area -->
+                <div class="text-center space-y-6">
+                    <div class="inline-block p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 rounded-full cursor-pointer hover:scale-105 transition-transform"
+                        onclick="generateRandomProblem()">
+                        <button
+                            class="bg-slate-900 text-white font-bold py-4 px-12 rounded-full text-xl shadow-2xl flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-400" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                            Generate Random Variation
+                        </button>
+                    </div>
+                    <p class="text-slate-400 text-sm">Select an exam sidebar to load its problems,<br>then click to
+                        generate a random AI variation.</p>
+                </div>
+
+                <!-- Result Area -->
+                <div id="generator-result" class="w-full"></div>
+
+            </div>
+        </main>
+    </div>
 
     <script>
         // 1. Configure marked
@@ -137,6 +614,119 @@
         });
 
         let currentExam = "";
+        let appMode = 'view'; // 'view' or 'generate'
+        let cachedProblems = []; // Store problems for random picking
+
+        function log(msg) {
+            console.log(msg);
+        }
+
+        function startApp(mode) {
+            appMode = mode;
+            console.log("Starting App in mode:", mode); // Debug
+
+            const landing = document.getElementById('landing-page');
+            const mainApp = document.getElementById('main-app');
+            const label = document.getElementById('app-mode-label');
+
+            // Mode UI Toggles
+            const grid = document.getElementById('problems-grid');
+            const genContainer = document.getElementById('generator-container');
+            const viewControls = document.getElementById('view-mode-controls');
+            const genControls = document.getElementById('gen-mode-controls');
+
+            label.textContent = mode === 'view' ? "Mode: Viewer (Read Only)" : "Mode: AI Generator";
+            label.className = mode === 'view' ? "text-xs text-blue-400 mt-1 hidden md:block" : "text-xs text-purple-400 mt-1 hidden md:block font-bold";
+
+            // Explicitly manage visibility classes
+            if (mode === 'view') {
+                grid.classList.remove('hidden');
+                genContainer.classList.add('hidden');
+                viewControls.classList.remove('hidden');
+                if (genControls) genControls.classList.add('hidden');
+            } else {
+                grid.classList.add('hidden');
+                genContainer.classList.remove('hidden');
+                viewControls.classList.add('hidden');
+                if (genControls) genControls.classList.remove('hidden');
+                if (genControls) genControls.classList.add('flex');
+            }
+
+            // Force visibility - direct style over classes
+            landing.classList.add('hidden');
+
+            mainApp.classList.remove('hidden');
+            mainApp.classList.add('flex');
+            mainApp.classList.remove('opacity-0');
+            mainApp.style.opacity = '1';
+
+            log("App started in mode: " + mode);
+
+            // Trigger resize for layout
+            window.dispatchEvent(new Event('resize'));
+
+            // Auto-load if exam selected
+            if (currentExam) {
+                loadProblems(currentExam);
+            } else {
+                // Show "Select Exam" message if no current exam
+                const grid = document.getElementById('problems-grid');
+                if (appMode === 'view') {
+                    grid.innerHTML = `
+                            <div class="col-span-full flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-75">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                <p class="text-xl text-slate-400 font-semibold">Select an exam from the sidebar</p>
+                                <p class="text-sm text-slate-500">Choose a dataset to begin viewing problems.</p>
+                            </div>
+                        `;
+                }
+
+                // Open sidebar if no exam selected on desktop
+                if (window.innerWidth >= 768) {
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.classList.remove('-translate-x-full'); // ensure open
+                }
+            }
+        }
+
+        function goHome() {
+            const landing = document.getElementById('landing-page');
+            const mainApp = document.getElementById('main-app');
+
+            mainApp.style.opacity = '0';
+
+            setTimeout(() => {
+                mainApp.classList.add('hidden');
+                mainApp.classList.remove('flex');
+                mainApp.classList.add('opacity-0');
+
+                landing.classList.remove('hidden');
+                // Force reflow
+                void landing.offsetWidth;
+                landing.classList.remove('opacity-0');
+            }, 500);
+        }
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            // Case: Close
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+            // Case: Open
+            else {
+                overlay.classList.remove('hidden');
+                requestAnimationFrame(() => overlay.classList.remove('opacity-0'));
+                sidebar.classList.remove('-translate-x-full');
+            }
+        }
 
         async function fetchExams() {
             try {
@@ -144,12 +734,24 @@
                 const exams = await res.json();
                 const list = document.getElementById('exam-list');
                 list.innerHTML = '';
-                exams.forEach(exam => {
+
+                if (exams.length === 0) {
+                    list.innerHTML = '<div class="p-4 text-sm text-slate-500 text-center">No exams found.<br>Check output directory.</div>';
+                    return;
+                }
+
+                exams.forEach((exam, index) => {
                     const div = document.createElement('div');
-                    div.className = 'sidebar-item px-4 py-3 rounded-xl cursor-pointer hover:bg-slate-700 transition text-sm text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap';
+                    div.className = 'sidebar-item px-4 py-3 rounded-xl cursor-pointer hover:bg-slate-700 transition text-sm text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap mb-1';
                     div.textContent = exam;
                     div.onclick = () => selectExam(exam, div);
+                    div.dataset.exam = exam; // Store for reference
                     list.appendChild(div);
+
+                    // Auto-select first exam if none selected
+                    if (index === 0 && !currentExam) {
+                        selectExam(exam, div);
+                    }
                 });
             } catch (err) { console.error(err); }
         }
@@ -159,32 +761,52 @@
             document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
             document.getElementById('current-exam-title').textContent = exam;
+
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 768 && !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+
             loadProblems(exam);
         }
 
         async function loadProblems(exam) {
             try {
+                // If in generator mode, we just fetch data but don't render grid
                 const grid = document.getElementById('problems-grid');
-                grid.innerHTML = '<div class="col-span-full py-20 text-center text-slate-500">Loading problems...</div>';
+                if (appMode === 'view') {
+                    grid.innerHTML = '<div class="col-span-full py-20 text-center text-slate-500">Loading problems...</div>';
+                }
 
                 const res = await fetch(`/api/exams/${encodeURIComponent(exam)}/problems?t=${Date.now()}`);
                 const problems = await res.json();
+                cachedProblems = problems; // Cache for generator
+
                 document.getElementById('stat-count').textContent = `${problems.length} Problems found`;
 
-                grid.innerHTML = '';
-                problems.forEach(prob => {
-                    try {
-                        grid.appendChild(createProblemCard(prob));
-                    } catch (e) {
-                        console.error("Card error:", e);
-                        const err = document.createElement('div');
-                        err.className = 'p-4 bg-red-900/50 border border-red-500 rounded-xl text-red-200 text-xs';
-                        err.textContent = `Error: ${e.message}`;
-                        grid.appendChild(err);
-                    }
-                });
+                if (appMode === 'view') {
+                    grid.innerHTML = '';
+                    log("Success! Loaded " + problems.length + " problems.");
 
-                if (window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, grid]);
+                    if (problems.length > 0) {
+                        log("First Item: " + JSON.stringify(problems[0]).substring(0, 100) + "...");
+
+
+                    }
+
+                    problems.forEach(prob => {
+                        try {
+                            grid.appendChild(createProblemCard(prob));
+                        } catch (e) { log("Error rendering card: " + e.message); }
+                    });
+                    log("Render complete.");
+                    if (window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, grid]);
+                } else {
+                    // Generator Mode: Clear previous results on exam switch? Optional.
+                    // For now, let's keep the result area clean
+                    document.getElementById('generator-result').innerHTML = '';
+                }
+
             } catch (err) { console.error(err); }
         }
 
@@ -194,7 +816,7 @@
 
             const optionsHtml = (prob.options && prob.options.length) ?
                 `<div class="grid grid-cols-1 gap-2 mt-4">${prob.options.map(opt =>
-                    `<div class="text-xs text-slate-400 bg-slate-800/50 px-3 py-2 rounded-xl border border-slate-700/50 shadow-sm content-text">${opt}</div>`
+                    `<div class="text-xs text-slate-400 bg-slate-800/50 px-3 py-2 rounded-xl border border-slate-700/50 shadow-sm content-text text-left">${opt}</div>`
                 ).join('')}</div>` : '';
 
             const chartsHtml = (prob.charts && prob.charts.length) ?
@@ -220,7 +842,7 @@
                     </div>
                 </div>
                 <div class="p-6 flex-1 flex flex-col space-y-6">
-                    <div class="bg-white p-3 rounded-2xl h-56 flex items-center justify-center overflow-hidden shadow-inner group relative">
+                    <div class="bg-white p-3 rounded-2xl h-48 md:h-56 flex items-center justify-center overflow-hidden shadow-inner group relative">
                         <img src="${prob.image_url}" class="max-h-full max-w-full object-contain cursor-zoom-in group-hover:scale-105 transition" onclick="window.open('${prob.image_url}')">
                     </div>
                     <div class="space-y-4">
@@ -232,13 +854,15 @@
                         ${optionsHtml}
                     </div>
                 </div>
+                <!-- Action Bar -->
+                ${appMode === 'generate' ? `
                 <div class="px-6 py-4 bg-slate-900/50 border-t border-slate-700/50 flex justify-between items-center text-[10px]">
                     <span class="text-slate-600 font-mono">BBOX: [${prob.box_2d ? prob.box_2d.join(', ') : ''}]</span>
                     <button onclick='generateVariation(${JSON.stringify(prob).replace(/'/g, "&apos;")}, this)' class="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full transition-all shadow-lg hover:shadow-purple-500/30 font-bold uppercase tracking-tighter flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 9a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zm7-10a1 1 0 01.707.293l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L14.586 5H7a1 1 0 00-1 1v6H4V6a3 3 0 013-3h7.586l-1.293-1.293A1 1 0 0112 1z" clip-rule="evenodd" /></svg>
                         Magic
                     </button>
-                </div>
+                </div>` : ''}
             `;
             return div;
         }
@@ -246,7 +870,23 @@
         async function generateVariation(prob, btn) {
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = `<svg class="animate-spin h-3 w-3 mr-1" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Generating...`;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Loading Text Animation
+            const loadingTexts = [
+                "Analyzing problem image...",
+                "Consulting Gemini 3 AI...",
+                "Drafting new scenario...",
+                "Reconstructing diagrams...",
+                "Almost there..."
+            ];
+            let step = 0;
+            btn.innerHTML = `<svg class="animate-spin h-3 w-3 mr-1" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> ${loadingTexts[0]}`;
+
+            const interval = setInterval(() => {
+                step = (step + 1) % loadingTexts.length;
+                btn.innerHTML = `<svg class="animate-spin h-3 w-3 mr-1" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> ${loadingTexts[step]}`;
+            }, 3000);
 
             try {
                 const res = await fetch('/api/generate-variation', {
@@ -254,6 +894,10 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(prob)
                 });
+                clearInterval(interval);
+
+                if (!res.ok) throw new Error(`Server Error: ${res.status}`);
+                clearInterval(interval);
                 const data = await res.json();
 
                 if (data.reconstruction_type === 'error') throw new Error(data.reconstruction_code);
@@ -328,7 +972,6 @@
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub, variationDiv]);
                 }
 
-                btn.innerHTML = "✨ Done";
             } catch (e) {
                 console.error(e);
                 alert("Generation failed: " + e.message);
@@ -336,6 +979,245 @@
                 btn.disabled = false;
             }
         }
+
+        // [Fixed] Removed duplicate/empty generateVariation function here.
+
+        async function generateRandomProblem() {
+            if (!cachedProblems || cachedProblems.length === 0) {
+                alert("Please select an exam with problems from the sidebar first!");
+                return;
+            }
+
+            const resultDiv = document.getElementById('generator-result');
+
+            const loadingTexts = [
+                "Selecting random problem...",
+                "Gemini 3 is thinking...",
+                "Drafting creative variation...",
+                "Drawing diagrams...",
+                "Almost done..."
+            ];
+            let step = 0;
+
+            resultDiv.innerHTML = `
+                <div class="glass p-8 rounded-3xl text-center space-y-4 animate-pulse">
+                     <div class="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                     <h3 class="text-xl font-bold text-white" id="loading-msg">${loadingTexts[0]}</h3>
+                     <p class="text-slate-400">Please wait... Large AI models may take 30-60s.</p>
+                </div>
+            `;
+
+            const interval = setInterval(() => {
+                step = (step + 1) % loadingTexts.length;
+                const msg = document.getElementById('loading-msg');
+                if (msg) msg.textContent = loadingTexts[step];
+            }, 3000);
+
+            // Pick Random
+            const randomProb = cachedProblems[Math.floor(Math.random() * cachedProblems.length)];
+
+            try {
+                const res = await fetch('/api/generate-variation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(randomProb)
+                });
+                clearInterval(interval);
+                const data = await res.json();
+
+                if (data.reconstruction_type === 'error') throw new Error(data.reconstruction_code);
+
+                // Render Result
+                resultDiv.innerHTML = '';
+
+                const container = document.createElement('div');
+                container.className = 'problem-card glass rounded-3xl overflow-hidden shadow-2xl border border-purple-500/30';
+
+                let innerHTML = `
+                    <div class="p-6 bg-gradient-to-r from-purple-900/50 to-slate-900 border-b border-purple-500/30 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-purple-300 font-bold uppercase tracking-wider">AI Generated Variation</span>
+                            <h2 class="text-2xl font-bold text-white mt-1">Random Practice Problem</h2>
+                        </div>
+                        <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-lg text-xs font-bold border border-purple-500/50">Based on ${randomProb.header}</span>
+                    </div>
+                    <div class="p-8 space-y-8">
+                 `;
+
+                // 1. SVG
+                if (data.reconstruction_type === 'svg') {
+                    let svgContent = data.reconstruction_code;
+                    if (svgContent.includes('```svg')) svgContent = svgContent.split('```svg')[1].split('```')[0];
+                    if (svgContent.includes('```xml')) svgContent = svgContent.split('```xml')[1].split('```')[0];
+                    innerHTML += `
+                        <div class="bg-white p-6 rounded-2xl shadow-inner border border-purple-200 overflow-hidden flex justify-center">
+                            ${svgContent}
+                        </div>
+                    `;
+                }
+
+                // 2. Text Content
+                const vp = data.variation_problem;
+                if (vp) {
+                    innerHTML += `
+                        <div class="space-y-6">
+                            ${vp.scenario ? `<div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50"><p class="text-base text-slate-200 leading-relaxed content-text">${vp.scenario}</p></div>` : ''}
+                            
+                            ${vp.table ? `
+                            <div class="overflow-x-auto rounded-xl shadow-lg border border-slate-700/50 bg-slate-900/50 p-4">
+                                ${marked.parse(vp.table)}
+                            </div>` : ''}
+
+                            <div class="ps-2 border-l-4 border-purple-500 pl-4">
+                                <h3 class="text-xl font-bold text-white leading-tight content-text">${vp.directive || 'No directive'}</h3>
+                            </div>
+                            
+                            ${vp.propositions ? `
+                            <div class="relative p-6 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+                                <span class="absolute -top-3 left-4 px-2 py-1 bg-slate-700 text-xs text-slate-300 rounded shadow">보기</span>
+                                <p class="text-sm text-slate-300 content-text" style="white-space: pre-wrap;">${vp.propositions}</p>
+                            </div>` : ''}
+                            
+                            <div class="grid grid-cols-1 gap-3 mt-6">
+                                ${(vp.options || []).map(opt => `
+                                    <button class="text-left w-full h-full text-sm text-slate-300 hover:text-white bg-slate-800/50 hover:bg-purple-600/20 px-5 py-4 rounded-xl border border-slate-700/50 hover:border-purple-500/50 transition-all shadow-sm content-text group">
+                                        <span class="inline-block w-6 h-6 rounded-full bg-slate-700 group-hover:bg-purple-500 text-center leading-6 text-xs mr-2 transition-colors">?</span>
+                                        ${opt}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                innerHTML += `</div>`; // Close p-8
+                container.innerHTML = innerHTML;
+
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(container); // Fix: append to resultDiv, not container innerHTML again
+            } catch (e) {
+                console.error(e);
+                alert("Random generation failed: " + e.message);
+                resultDiv.innerHTML = `<div class="text-red-400 text-center p-4">Error: ${e.message}</div>`;
+                clearInterval(interval);
+            }
+        }
+
+        // --- Layout Logic ---
+        function setLayout(mode) {
+            const grid = document.getElementById('problems-grid');
+
+            // Allow toggling between default grid classes and custom layout classes
+            grid.className = "pb-20 transition-all duration-300"; // Reset base
+
+            if (mode === 'classic') {
+                grid.classList.add('grid', 'grid-cols-1', 'xl:grid-cols-2', '2xl:grid-cols-3', 'gap-4', 'md:gap-6');
+            } else if (mode === 'focus') {
+                grid.classList.add('layout-focus');
+            } else if (mode === 'compact') {
+                grid.classList.add('layout-compact');
+            }
+
+            // Update Buttons
+            ['classic', 'focus', 'compact'].forEach(m => {
+                const btn = document.getElementById(`btn-layout-${m}`);
+                if (m === mode) {
+                    btn.classList.add('bg-blue-600', 'text-white');
+                    btn.classList.remove('text-slate-400');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('text-slate-400');
+                }
+            });
+
+            // Save Preference
+            localStorage.setItem('examAi_layout', mode);
+
+            // Force MathJax Reflow if needed
+            if (window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, grid]);
+        }
+
+        // Initialize Layout
+        const savedLayout = localStorage.getItem('examAi_layout') || 'classic';
+        setLayout(savedLayout);
+
+        // --- Help Logic ---
+        function openHelpModal() {
+            document.getElementById('help-modal').classList.remove('hidden');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').classList.add('hidden');
+        }
+
+        // Show help on first visit
+        if (!localStorage.getItem('examAi_help_seen')) {
+            setTimeout(openHelpModal, 1000); // Delay slightly for app to load
+            localStorage.setItem('examAi_help_seen', 'true');
+        }
+
+        // --- Upload Feature Logic ---
+        function openUploadModal() {
+            document.getElementById('upload-modal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('upload-modal').classList.add('hidden');
+            document.getElementById('upload-form').reset();
+            document.getElementById('file-label').textContent = 'Click to select PDF';
+            document.getElementById('upload-status').classList.add('hidden');
+        }
+
+        function openMobilePreview() {
+            // Open a popup window with iPhone 14 dimensions (390x844)
+            window.open(window.location.href, 'MobilePreview', 'width=390,height=844,resizable=yes,scrollbars=yes,status=yes');
+        }
+
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const file = formData.get('file');
+
+            if (!file || file.name === "") {
+                alert("Please select a file first.");
+                return;
+            }
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = "Uploading...";
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) throw new Error(await res.text());
+
+                const data = await res.json();
+
+                // Success UI
+                const status = document.getElementById('upload-status');
+                status.innerHTML = `<span class="text-green-400 font-bold block mb-1">Upload Successful!</span><span class="text-slate-500">Processing started for ${data.filename}.<br>Check back in 1-2 minutes.</span>`;
+                status.classList.remove('hidden');
+
+                // Show a toast log
+                log("File uploaded: " + data.filename);
+
+                setTimeout(() => {
+                    closeUploadModal();
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }, 3000);
+
+            } catch (err) {
+                alert("Upload failed: " + err.message);
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
 
         fetchExams();
     </script>
