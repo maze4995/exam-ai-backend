@@ -1184,40 +1184,150 @@
             }
 
             const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.textContent;
+            const statusDiv = document.getElementById('upload-status');
+
+            // UI Reset
             btn.disabled = true;
-            btn.textContent = "Uploading...";
+            btn.innerHTML = `<svg class="animate-spin h-4 w-4 inline mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Initializing...`;
+            statusDiv.classList.remove('hidden');
+            statusDiv.innerHTML = `
+                <div class="w-full bg-slate-800 rounded-full h-2.5 mb-2 overflow-hidden border border-slate-700">
+                    <div id="upload-progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-slate-400">
+                    <span id="upload-progress-text">0% Uploaded</span>
+                    <span id="upload-speed"></span>
+                </div>
+            `;
 
-            try {
-                const res = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
+            // XHR for Upload Progress
+            const xhr = new XMLHttpRequest();
+            const startTime = Date.now();
 
-                if (!res.ok) throw new Error(await res.text());
+            xhr.upload.addEventListener("progress", (event) => {
+                if (event.lengthComputable) {
+                    const percent = (event.loaded / event.total) * 100;
+                    document.getElementById('upload-progress-bar').style.width = percent + "%";
+                    document.getElementById('upload-progress-text').textContent = Math.round(percent) + "% Uploaded";
 
-                const data = await res.json();
+                    if (percent < 100) {
+                        btn.innerHTML = `<span class="animate-pulse">Uploading... ${Math.round(percent)}%</span>`;
+                    } else {
+                        btn.innerHTML = `<span class="animate-pulse">Finalizing Upload...</span>`;
+                    }
+                }
+            });
 
-                // Success UI
-                const status = document.getElementById('upload-status');
-                status.innerHTML = `<span class="text-green-400 font-bold block mb-1">Upload Successful!</span><span class="text-slate-500">Processing started for ${data.filename}.<br>Check back in 1-2 minutes.</span>`;
-                status.classList.remove('hidden');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const data = JSON.parse(xhr.responseText);
+                        handleUploadSuccess(data.filename);
+                    } else {
+                        handleUploadError(xhr.responseText);
+                    }
+                }
+            };
 
-                // Show a toast log
-                log("File uploaded: " + data.filename);
+            xhr.open("POST", "/api/upload", true);
+            xhr.send(formData);
 
-                setTimeout(() => {
-                    closeUploadModal();
-                    btn.disabled = false;
-                    btn.textContent = originalText;
-                }, 3000);
-
-            } catch (err) {
-                alert("Upload failed: " + err.message);
+            function handleUploadError(msg) {
                 btn.disabled = false;
-                btn.textContent = originalText;
+                btn.textContent = "Start Processing";
+                statusDiv.innerHTML = `<div class="text-red-400 font-bold p-2 bg-red-900/20 rounded border border-red-500/50">Upload Failed: ${msg}</div>`;
+            }
+
+            function handleUploadSuccess(filename) {
+                // Upload done, now polling for processing
+                btn.innerHTML = `<svg class="animate-spin h-4 w-4 inline mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Processing PDF...`;
+
+                statusDiv.innerHTML = `
+                    <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-700 space-y-2">
+                        <div class="text-green-400 font-bold flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                            Upload Complete!
+                        </div>
+                        <p class="text-slate-400 text-xs">Now extracting problems from <b>${filename}</b>.<br>This usually takes 30-60 seconds.</p>
+                        <div class="w-full bg-slate-900 rounded-full h-1.5 mt-2 overflow-hidden">
+                            <div class="bg-indigo-500 h-1.5 rounded-full animate-progress-indeterminate w-full origin-left-right"></div>
+                        </div>
+                    </div>
+                `;
+
+                // Start Polling
+                let attempts = 0;
+                const maxAttempts = 60; // 2 minutes (2s interval)
+                const folderName = filename.replace('.pdf', '').replace('.PDF', ''); // Simple guess, backend logic matches this
+
+                const pollInterval = setInterval(async () => {
+                    attempts++;
+                    try {
+                        const res = await fetch(`/api/exams?t=${Date.now()}`);
+                        const exams = await res.json();
+
+                        // Check if our new exam exists
+                        // Note: We do loose matching because filename might be sanitized differently
+                        const found = exams.find(e => e.includes(folderName) || folderName.includes(e));
+
+                        if (found) {
+                            clearInterval(pollInterval);
+                            finishProcessing(found);
+                        } else if (attempts >= maxAttempts) {
+                            clearInterval(pollInterval);
+                            showTimeoutWarning();
+                        }
+                    } catch (e) {
+                        console.error("Polling error", e);
+                    }
+                }, 2000);
+            }
+
+            function finishProcessing(examName) {
+                btn.className = "w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition shadow-lg shadow-green-600/20";
+                btn.innerHTML = "Processing Complete! Opening...";
+
+                statusDiv.innerHTML += `<div class="text-green-400 text-xs font-bold mt-2">Ready! Redirecting...</div>`;
+
+                // Refresh list and select
+                fetchExams().then(() => {
+                    setTimeout(() => {
+                        closeUploadModal();
+                        // Find and click the sidebar item
+                        const item = Array.from(document.querySelectorAll('.sidebar-item')).find(el => el.textContent === examName);
+                        if (item) item.click();
+                        btn.disabled = false;
+                        btn.textContent = "Start Processing"; // Reset for next time
+                        btn.className = "w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-600/20"; // Reset class
+                    }, 1500);
+                });
+            }
+
+            function showTimeoutWarning() {
+                statusDiv.innerHTML += `
+                    <div class="text-yellow-400 text-xs mt-2 border-t border-slate-700 pt-2">
+                        Processing is taking longer than expected. It might still be running in the background.<br>
+                        <button onclick="closeUploadModal(); fetchExams();" class="underline hover:text-white mt-1">Close & Refresh List Manually</button>
+                    </div>
+                `;
+                btn.disabled = false;
+                btn.textContent = "Start Processing";
             }
         });
+
+        // Add custom animation for indeterminate progress
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes progress-indeterminate {
+                0% { transform: translateX(-100%); }
+                50% { transform: translateX(0%); }
+                100% { transform: translateX(100%); }
+            }
+            .animate-progress-indeterminate {
+                animation: progress-indeterminate 1.5s infinite linear;
+            }
+        `;
+        document.head.appendChild(styleSheet);
 
         fetchExams();
     </script>
