@@ -480,7 +480,7 @@ async def upload_pdf(
                 
         background_tasks.add_task(safe_process, file_path, safe_filename, user_output_dir)
         
-        return {"filename": safe_filename, "message": "Upload successful. Processing started in background."}
+        return {"filename": safe_filename, "message": "Upload started"}
     except Exception as e:
          print(f"Upload Error: {e}")
          raise HTTPException(status_code=500, detail=str(e))

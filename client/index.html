@@ -580,8 +580,10 @@
 
                 if (!res.ok) throw new Error("Upload Failed");
 
+                const data = await res.json();
+                const filename = data.filename; // Use sanitized filename from server
+
                 // 2. Poll Progress
-                const filename = file.name;
                 const poll = setInterval(async () => {
                     try {
                         const pres = await fetch(`${API_BASE_URL}/api/progress/${filename}`);
