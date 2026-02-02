@@ -17,26 +17,19 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 Days
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
 
+import hashlib
+
 # --- Password Utils ---
 def verify_password(plain_password, hashed_password):
-    # Bcrypt cannot handle > 72 bytes. We truncate BYTES to be safe.
-    # encode -> truncate -> (bcrypt handles bytes usually, or decode back to str if needed by wrapper)
-    # However, passlib's bcrypt wrapper expects STRINGS usually, but handles bytes too.
-    # Safest: encode -> truncate -> decode (ignoring errors at end) is messy.
-    # Actually, passlib handles bytes fine.
-    
-    password_bytes = plain_password.encode('utf-8')
-    if len(password_bytes) > 72:
-        password_bytes = password_bytes[:72]
-    
-    return pwd_context.verify(password_bytes, hashed_password)
+    # Fix: Pre-hash with SHA-256 to ensure input is always 64 chars (safe for bcrypt)
+    # This solves the 72-byte limit and Unicode issues.
+    safe_password = hashlib.sha256(plain_password.encode('utf-8')).hexdigest()
+    return pwd_context.verify(safe_password, hashed_password)
 
 def get_password_hash(password):
-    password_bytes = password.encode('utf-8')
-    if len(password_bytes) > 72:
-        password_bytes = password_bytes[:72]
-        
-    return pwd_context.hash(password_bytes)
+    # Fix: Pre-hash with SHA-256
+    safe_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+    return pwd_context.hash(safe_password)
 
 # --- Token Utils ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
