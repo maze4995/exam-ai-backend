@@ -453,7 +453,6 @@ async def upload_pdf(
         # Determine user output directory
         user_output_dir = get_user_output_dir(current_user)
 
-        # We wrap process_pdf to catch errors without crashing app
         def safe_process(path, fname, output_dir):
             def update_progress(msg, pct):
                 processing_status[fname] = {"status": msg, "percent": pct, "done": False}
