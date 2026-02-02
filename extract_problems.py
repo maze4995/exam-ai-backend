@@ -112,6 +112,12 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
             crop_path = os.path.join(crop_dir, f"q_{q_num}.png")
             crop.save(crop_path)
             
+            # --- Fix: Add image_url for frontend ---
+            # Path construction: /images/{exam_name}/crops_{page}/{filename}
+            # output_base is .../output_extraction/{exam_name}
+            exam_name = os.path.basename(output_base)
+            prob["image_url"] = f"/images/{exam_name}/crops_{page_bs}/q_{q_num}.png"
+            
             # Crop visual elements (new feature)
             visuals = content.get("visual_elements", [])
             for idx, vis in enumerate(visuals):
@@ -128,7 +134,7 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
                         vis_path = os.path.join(crop_dir, vis_filename)
                         vis_crop.save(vis_path)
                         # Add path to the visual object for frontend
-                        vis["image_path"] = vis_filename 
+                        vis["image_path"] = f"crops_{page_bs}/{vis_filename}"
                     except Exception as ve:
                         print(f"Visual crop error for Q{q_num} visual {idx}: {ve}")
                         
