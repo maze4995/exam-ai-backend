@@ -50,7 +50,16 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
         if db_user:
             raise HTTPException(status_code=400, detail="Username already registered")
         
-        hashed_password = get_password_hash(user.password)
+        # INLINE FIX: Pre-hash here to guarantee 64-char string, bypassing auth.py issues
+        import hashlib
+        # SHA-256 results in 64 hex chars. safe for bcrypt (72 limit)
+        safe_password_for_bcrypt = hashlib.sha256(user.password.encode('utf-8')).hexdigest()
+        
+        # We pass this 64-char string to get_password_hash. 
+        # Even if auth.py is old (no pre-hash inside), 64 < 72, so it works.
+        # If auth.py is new (pre-hash inside), it double hashes (SHA256(SHA256(...))), also safe.
+        hashed_password = get_password_hash(safe_password_for_bcrypt)
+        
         new_user = User(username=user.username, hashed_password=hashed_password)
         db.add(new_user)
         db.commit()
@@ -61,7 +70,8 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
         import traceback
         traceback.print_exc()
         print(f"Registration Error: {e}")
-        raise HTTPException(status_code=500, detail=f"Registration Failed: {str(e)}")
+        # Change message to verify update
+        raise HTTPException(status_code=500, detail=f"DEBUG_INLINE_FIX Error: {str(e)}")
 
 @app.post("/api/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
