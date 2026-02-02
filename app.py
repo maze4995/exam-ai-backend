@@ -477,12 +477,6 @@ async def upload_pdf(
 
 
 # Serve the frontend as a single file for now
-@app.get("/")
-async def get_index():
-    from fastapi.responses import HTMLResponse
-    with open("viewer.html", "r", encoding="utf-8") as f:
-        return HTMLResponse(content=f.read())
-
 @app.get("/manifest.json")
 async def get_manifest():
     from fastapi.responses import FileResponse
@@ -492,6 +486,9 @@ async def get_manifest():
 async def get_icon():
     from fastapi.responses import FileResponse
     return FileResponse("icon.png", media_type="image/png")
+
+# Mount client directory to serve frontend (Must be last)
+app.mount("/", StaticFiles(directory="client", html=True), name="frontend")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
