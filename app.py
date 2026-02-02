@@ -473,25 +473,7 @@ async def upload_pdf(
     except Exception as e:
          print(f"Upload Error: {e}")
          raise HTTPException(status_code=500, detail=str(e))
-            def update_progress(msg, pct):
-                processing_status[fname] = {"status": msg, "percent": pct, "done": False}
-                
-            try:
-                print(f"Starting background processing for {path}")
-                process_pdf(path, progress_callback=update_progress)
-                print(f"Finished background processing for {path}")
-                processing_status[fname] = {"status": "Complete!", "percent": 100, "done": True}
-            except Exception as e:
-                print(f"Background processing failed for {path}: {e}")
-                processing_status[fname] = {"status": f"Error: {str(e)}", "percent": 0, "done": True}
-                
-        background_tasks.add_task(safe_process, file_path, safe_filename)
-        
-        return {"filename": safe_filename, "message": "Upload successful. Processing started in background."}
-        
-    except Exception as e:
-        print(f"Upload failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
 
 
 # Serve the frontend as a single file for now
