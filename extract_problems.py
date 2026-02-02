@@ -113,10 +113,19 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
             crop.save(crop_path)
             
             # --- Fix: Add image_url for frontend ---
-            # Path construction: /images/{exam_name}/crops_{page}/{filename}
-            # output_base is .../output_extraction/{exam_name}
+            # Path construction: /images/{username}/{exam_name}/crops_{page}/{filename}
+            # output_base is .../output_extraction/{username}/{exam_name}
             exam_name = os.path.basename(output_base)
-            prob["image_url"] = f"/images/{exam_name}/crops_{page_bs}/q_{q_num}.png"
+            parent_dir = os.path.basename(os.path.dirname(output_base))
+            
+            # Check if running in user-isolated mode (parent != output_extraction)
+            # Adjust condition based on actual folder structure
+            if parent_dir == "output_extraction" or parent_dir == "output":
+                 url_prefix = f"/images/{exam_name}"
+            else:
+                 url_prefix = f"/images/{parent_dir}/{exam_name}"
+
+            prob["image_url"] = f"{url_prefix}/crops_{page_bs}/q_{q_num}.png"
             
             # Crop visual elements (new feature)
             visuals = content.get("visual_elements", [])
@@ -132,10 +141,9 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
                         vis_crop = img.crop((v_left, v_top, v_right, v_bottom))
                         vis_filename = f"q_{q_num}_visual_{idx}.png"
                         vis_path = os.path.join(crop_dir, vis_filename)
-                        vis_path = os.path.join(crop_dir, vis_filename)
                         vis_crop.save(vis_path)
                         # Add path to the visual object for frontend
-                        vis["image_url"] = f"/images/{exam_name}/crops_{page_bs}/{vis_filename}"
+                        vis["image_url"] = f"{url_prefix}/crops_{page_bs}/{vis_filename}"
                     except Exception as ve:
                         print(f"Visual crop error for Q{q_num} visual {idx}: {ve}")
                         

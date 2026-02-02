@@ -130,6 +130,23 @@ async def list_exams(current_user: User = Depends(get_current_user)):
             exams.append(entry.name)
     return sorted(exams)
 
+@app.delete("/api/exams/{exam_name}")
+async def delete_exam(exam_name: str, current_user: User = Depends(get_current_user)):
+    """Delete an exam and its associated data for the current user."""
+    user_dir = get_user_output_dir(current_user)
+    exam_path = os.path.join(user_dir, exam_name)
+    
+    if not os.path.exists(exam_path):
+        raise HTTPException(status_code=404, detail="Exam not found")
+        
+    try:
+        import shutil
+        shutil.rmtree(exam_path)
+        return {"message": f"Exam '{exam_name}' deleted successfully"}
+    except Exception as e:
+        print(f"Error deleting exam {exam_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete exam: {str(e)}")
+
 @app.get("/api/exams/{exam_name}/problems")
 async def get_exam_problems(exam_name: str, current_user: User = Depends(get_current_user)):
     """Retrieve problems for a specific exam belonging to the user."""
