@@ -30,7 +30,8 @@ load_dotenv(override=True)
 init_db()
 
 # --- Local Auth Helpers (Fix for caching/update issues) ---
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Switched to pbkdf2_sha256 to avoid bcrypt version mismatch issues on server
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 def verify_password_local(plain_password, hashed_password):
     # Fix: Pre-hash with SHA-256 to ensure input is always 64 chars
