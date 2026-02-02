@@ -136,30 +136,6 @@ async def get_exam_problems(exam_name: str, current_user: User = Depends(get_cur
     if not os.path.exists(exam_path):
         raise HTTPException(status_code=404, detail="Exam not found")
         
-    problems = []
-    # ... (Rest of logic is similar, but scanning user folder)
-    # Using existing logic but pointing to user path
-    
-    files = [f for f in os.listdir(exam_path) if f.endswith(".json")]
-    
-    # Sort by numeric prefix if possible (e.g. 1_ extracted)
-    def sort_key(f):
-        # ... logic ...
-        try:
-           return int(f.split('_')[0])
-        except:
-           return 999
-           
-    for f in sorted(files, key=sort_key):
-        try:
-            with open(os.path.join(exam_path, f), "r", encoding="utf-8") as json_file:
-                problems.extend(json.load(json_file))
-        except Exception as e:
-            print(f"Error loading {f}: {e}")
-            
-    return problems
-
-    
     all_problems = []
     
     # 1. Look for all extracted_*.png.json files
@@ -202,7 +178,7 @@ async def get_exam_problems(exam_name: str, current_user: User = Depends(get_cur
                 import re
                 q_num_clean = re.sub(r'[^0-9]', '', str(q_header)) or "None"
                 crop_filename = f"q_{q_num_clean}.png"
-                crop_path = f"/images/{exam_name}/{crop_rel_dir}/{crop_filename}"
+                crop_path = f"/images/{current_user.username}/{exam_name}/{crop_rel_dir}/{crop_filename}"
                 
                 # Add to list with detailed metadata
                 all_problems.append({
