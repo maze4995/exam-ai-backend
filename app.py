@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, status
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware

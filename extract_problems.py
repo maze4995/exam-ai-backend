@@ -3,6 +3,8 @@ import fitz  # PyMuPDF
 import cv2
 import numpy as np
 import os
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 import google.generativeai as genai
 from PIL import Image
 from utils import strict_json_parse
