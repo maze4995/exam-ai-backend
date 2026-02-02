@@ -132,9 +132,10 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
                         vis_crop = img.crop((v_left, v_top, v_right, v_bottom))
                         vis_filename = f"q_{q_num}_visual_{idx}.png"
                         vis_path = os.path.join(crop_dir, vis_filename)
+                        vis_path = os.path.join(crop_dir, vis_filename)
                         vis_crop.save(vis_path)
                         # Add path to the visual object for frontend
-                        vis["image_path"] = f"crops_{page_bs}/{vis_filename}"
+                        vis["image_url"] = f"/images/{exam_name}/crops_{page_bs}/{vis_filename}"
                     except Exception as ve:
                         print(f"Visual crop error for Q{q_num} visual {idx}: {ve}")
                         
