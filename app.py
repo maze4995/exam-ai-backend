@@ -203,7 +203,7 @@ async def get_exam_problems(exam_name: str, current_user: User = Depends(get_cur
     return all_problems
 
 # Mount the output directory to serve images
-app.mount("/images", StaticFiles(directory=OUTPUT_DIR), name="images")
+app.mount("/images", StaticFiles(directory=BASE_OUTPUT_DIR), name="images")
 
 import google.generativeai as genai
 from PIL import Image
