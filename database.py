@@ -3,7 +3,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # 1. Setup SQLite Database
-SQLALCHEMY_DATABASE_URL = "sqlite:///./users.db"
+import os
+
+# 1. Setup SQLite Database
+# Check for Railway persistent volume
+base_dir = "/app/persistent" if os.path.exists("/app/persistent") else "."
+db_path = os.path.join(base_dir, "users.db")
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}

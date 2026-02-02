@@ -53,7 +53,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BASE_OUTPUT_DIR = "output_extraction"
+# Check for Railway persistent volume
+PERSISTENT_ROOT = "/app/persistent" if os.path.exists("/app/persistent") else "."
+BASE_OUTPUT_DIR = os.path.join(PERSISTENT_ROOT, "output_extraction")
+
 if not os.path.exists(BASE_OUTPUT_DIR):
     os.makedirs(BASE_OUTPUT_DIR)
 
