@@ -19,12 +19,24 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
 
 # --- Password Utils ---
 def verify_password(plain_password, hashed_password):
-    # Bcrypt cannot handle > 72 bytes. We truncate to be safe.
-    return pwd_context.verify(plain_password[:72], hashed_password)
+    # Bcrypt cannot handle > 72 bytes. We truncate BYTES to be safe.
+    # encode -> truncate -> (bcrypt handles bytes usually, or decode back to str if needed by wrapper)
+    # However, passlib's bcrypt wrapper expects STRINGS usually, but handles bytes too.
+    # Safest: encode -> truncate -> decode (ignoring errors at end) is messy.
+    # Actually, passlib handles bytes fine.
+    
+    password_bytes = plain_password.encode('utf-8')
+    if len(password_bytes) > 72:
+        password_bytes = password_bytes[:72]
+    
+    return pwd_context.verify(password_bytes, hashed_password)
 
 def get_password_hash(password):
-    # Bcrypt cannot handle > 72 bytes. We truncate to be safe.
-    return pwd_context.hash(password[:72])
+    password_bytes = password.encode('utf-8')
+    if len(password_bytes) > 72:
+        password_bytes = password_bytes[:72]
+        
+    return pwd_context.hash(password_bytes)
 
 # --- Token Utils ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
