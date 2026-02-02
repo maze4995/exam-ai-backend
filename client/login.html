@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ExamAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-950 text-white h-screen flex items-center justify-center p-4 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat bg-blend-overlay bg-fixed">
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+
+    <div class="relative glass p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md space-y-8 animate-fade-in-up">
+        <div class="text-center space-y-2">
+            <h1
+                class="text-4xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                ExamAI</h1>
+            <p class="text-slate-400">Your Personal AI Exam Assistant</p>
+        </div>
+
+        <!-- Toggle -->
+        <div class="flex p-1 bg-slate-900/50 rounded-xl relative">
+            <div id="slider"
+                class="absolute left-1 top-1 w-[calc(50%-4px)] h-[calc(100%-8px)] bg-slate-700 rounded-lg transition-all duration-300">
+            </div>
+            <button onclick="toggleMode('login')" class="flex-1 py-2 text-sm font-bold z-10 transition-colors"
+                id="btn-login">Login</button>
+            <button onclick="toggleMode('register')"
+                class="flex-1 py-2 text-sm font-bold text-slate-400 z-10 transition-colors"
+                id="btn-register">Register</button>
+        </div>
+
+        <form id="auth-form" class="space-y-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 ml-1 uppercase">Username</label>
+                    <input type="text" name="username" required
+                        class="w-full bg-slate-900/50 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition text-white placeholder-slate-600"
+                        placeholder="Enter your username">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 ml-1 uppercase">Password</label>
+                    <input type="password" name="password" required
+                        class="w-full bg-slate-900/50 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition text-white placeholder-slate-600"
+                        placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all transform hover:scale-[1.02]">
+                <span id="submit-text">Log In</span>
+            </button>
+
+            <p id="error-msg" class="text-red-400 text-sm text-center hidden"></p>
+        </form>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const API_BASE_URL = "https://web-production-18fc8.up.railway.app";
+        // -------------
+
+        let isLogin = true;
+
+        function toggleMode(mode) {
+            isLogin = mode === 'login';
+            const slider = document.getElementById('slider');
+            const submitText = document.getElementById('submit-text');
+            const btnLogin = document.getElementById('btn-login');
+            const btnRegister = document.getElementById('btn-register');
+            const errorMsg = document.getElementById('error-msg');
+
+            errorMsg.classList.add('hidden');
+
+            if (isLogin) {
+                slider.style.transform = 'translateX(0)';
+                submitText.textContent = 'Log In';
+                btnLogin.classList.remove('text-slate-400');
+                btnRegister.classList.add('text-slate-400');
+            } else {
+                slider.style.transform = 'translateX(100%)';
+                submitText.textContent = 'Sign Up';
+                btnLogin.classList.add('text-slate-400');
+                btnRegister.classList.remove('text-slate-400');
+            }
+        }
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            const errorMsg = document.getElementById('error-msg');
+            const btn = e.target.querySelector('button');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            try {
+                let res;
+                if (isLogin) {
+                    // Login: Form Data for OAuth2
+                    const formBody = new URLSearchParams();
+                    formBody.append('username', data.username);
+                    formBody.append('password', data.password);
+
+                    res = await fetch(`${API_BASE_URL}/api/token`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formBody
+                    });
+                } else {
+                    // Register: JSON
+                    res = await fetch(`${API_BASE_URL}/api/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'Action failed');
+                }
+
+                if (isLogin) {
+                    const tokenData = await res.json();
+                    localStorage.setItem('token', tokenData.access_token);
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Registration successful! Please login.');
+                    toggleMode('login');
+                }
+
+            } catch (err) {
+                errorMsg.textContent = err.message;
+                errorMsg.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        });
+    </script>
+</body>
+
+</html>

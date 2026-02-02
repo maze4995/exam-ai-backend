@@ -481,6 +481,15 @@
                     </svg>
                     Back to Home
                 </button>
+                <button onclick="logout()"
+                    class="w-full py-2 bg-slate-800 hover:bg-red-900/30 text-slate-300 hover:text-red-400 rounded-lg text-sm flex items-center justify-center gap-2 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Logout
+                </button>
             </div>
         </aside>
 
@@ -596,6 +605,17 @@
     <script>
         // --- MOBILE CONFIGURATION ---
         const API_BASE_URL = "https://web-production-18fc8.up.railway.app";
+
+        // --- AUTH CHECK ---
+        const AUTH_TOKEN = localStorage.getItem('token');
+        if (!AUTH_TOKEN) {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
         // ----------------------------
 
         // 1. Configure marked
@@ -734,7 +754,7 @@
 
         async function fetchExams() {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/exams?t=${Date.now()}`);
+                const res = await fetch(`${API_BASE_URL}/api/exams?t=${Date.now()}`, { headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` } });
                 const exams = await res.json();
                 const list = document.getElementById('exam-list');
                 list.innerHTML = '';
@@ -782,7 +802,7 @@
                     grid.innerHTML = '<div class="col-span-full py-20 text-center text-slate-500">Loading problems...</div>';
                 }
 
-                const res = await fetch(`${API_BASE_URL}/api/exams/${encodeURIComponent(exam)}/problems?t=${Date.now()}`);
+                const res = await fetch(`${API_BASE_URL}/api/exams/${encodeURIComponent(exam)}/problems?t=${Date.now()}`, { headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` } });
                 const problems = await res.json();
                 cachedProblems = problems; // Cache for generator
 
@@ -895,7 +915,10 @@
             try {
                 const res = await fetch(API_BASE_URL + '/api/generate-variation', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
                     body: JSON.stringify(prob)
                 });
                 clearInterval(interval);
@@ -1023,7 +1046,10 @@
             try {
                 const res = await fetch(API_BASE_URL + '/api/generate-variation', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
                     body: JSON.stringify(randomProb)
                 });
                 clearInterval(interval);
@@ -1234,6 +1260,7 @@
             };
 
             xhr.open("POST", API_BASE_URL + "/api/upload", true);
+            xhr.setRequestHeader("Authorization", `Bearer ${AUTH_TOKEN}`);
             xhr.send(formData);
 
             function handleUploadError(msg) {
@@ -1275,7 +1302,7 @@
                     attempts++;
                     try {
                         // 1. Check detailed status
-                        const statusRes = await fetch(`${API_BASE_URL}/api/progress/${filename}`);
+                        const statusRes = await fetch(`${API_BASE_URL}/api/progress/${filename}`, { headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` } });
                         const statusData = await statusRes.json();
 
                         // Update UI with detailed message
