@@ -1,17 +1,27 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, status
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import json
 from typing import List, Dict, Union, Any
 import uvicorn
 from utils import strict_json_parse
-from extract_problems import process_pdf # Import extraction logic
+from extract_problems import process_pdf
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from sqlalchemy.orm import Session
+
+# --- Auth Modules ---
+from database import engine, init_db, get_db, User
+from auth import enumerate, get_current_user, get_password_hash, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from datetime import timedelta
 
 # Load environment variables
 load_dotenv(override=True)
+
+# Initialize Database Table
+init_db()
 
 app = FastAPI(title="AI Exam Dataset Viewer")
 
@@ -23,30 +33,100 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-OUTPUT_DIR = "output_extraction"
+BASE_OUTPUT_DIR = "output_extraction"
+if not os.path.exists(BASE_OUTPUT_DIR):
+    os.makedirs(BASE_OUTPUT_DIR)
 
-# Check if output directory exists
-if not os.path.exists(OUTPUT_DIR):
-    os.makedirs(OUTPUT_DIR)
+# --- Auth Endpoints ---
+
+class UserRegister(BaseModel):
+    username: str
+    password: str
+
+@app.post("/api/register")
+def register(user: UserRegister, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.username == user.username).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    
+    hashed_password = get_password_hash(user.password)
+    new_user = User(username=user.username, hashed_password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    return {"message": "User created successfully"}
+
+@app.post("/api/token")
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+# --- Protected Routes Helper ---
+def get_user_output_dir(user: User):
+    """Get isolated output directory for the current user."""
+    user_dir = os.path.join(BASE_OUTPUT_DIR, user.username)
+    if not os.path.exists(user_dir):
+        os.makedirs(user_dir)
+    return user_dir
+
+@app.get("/api/me")
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    return {"username": current_user.username, "id": current_user.id}
+
+# --- Modified Exam Endpoints (User Isolated) ---
 
 @app.get("/api/exams")
-async def list_exams():
-    """List all processed exams in the output directory."""
-    if not os.path.exists(OUTPUT_DIR):
-        return []
+async def list_exams(current_user: User = Depends(get_current_user)):
+    """List all processed exams in the USER'S private directory."""
+    user_dir = get_user_output_dir(current_user)
     
     exams = []
-    for entry in os.scandir(OUTPUT_DIR):
+    for entry in os.scandir(user_dir):
         if entry.is_dir() and not entry.name.startswith("crops_"):
             exams.append(entry.name)
     return sorted(exams)
 
 @app.get("/api/exams/{exam_name}/problems")
-async def get_exam_problems(exam_name: str):
-    """Retrieve all problems and metadata for a specific exam."""
-    exam_path = os.path.join(OUTPUT_DIR, exam_name)
+async def get_exam_problems(exam_name: str, current_user: User = Depends(get_current_user)):
+    """Retrieve problems for a specific exam belonging to the user."""
+    user_dir = get_user_output_dir(current_user)
+    exam_path = os.path.join(user_dir, exam_name)
+    
     if not os.path.exists(exam_path):
         raise HTTPException(status_code=404, detail="Exam not found")
+        
+    problems = []
+    # ... (Rest of logic is similar, but scanning user folder)
+    # Using existing logic but pointing to user path
+    
+    files = [f for f in os.listdir(exam_path) if f.endswith(".json")]
+    
+    # Sort by numeric prefix if possible (e.g. 1_ extracted)
+    def sort_key(f):
+        # ... logic ...
+        try:
+           return int(f.split('_')[0])
+        except:
+           return 999
+           
+    for f in sorted(files, key=sort_key):
+        try:
+            with open(os.path.join(exam_path, f), "r", encoding="utf-8") as json_file:
+                problems.extend(json.load(json_file))
+        except Exception as e:
+            print(f"Error loading {f}: {e}")
+            
+    return problems
+
     
     all_problems = []
     
@@ -337,7 +417,11 @@ async def get_progress(filename: str):
     return {"status": "Not found", "percent": 0, "done": False}
 
 @app.post("/api/upload")
-async def upload_pdf(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+async def upload_pdf(
+    background_tasks: BackgroundTasks, 
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
     """
     Handle PDF upload and trigger background processing.
     """
@@ -346,28 +430,50 @@ async def upload_pdf(background_tasks: BackgroundTasks, file: UploadFile = File(
         if not file.filename.lower().endswith('.pdf'):
             raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
             
-        # 2. Save to input directory
-        input_dir = "input_pdfs"
-        if not os.path.exists(input_dir):
-            os.makedirs(input_dir)
+        # 2. Save to user-specific upload directory
+        user_input_dir = os.path.join("uploads", current_user.username)
+        if not os.path.exists(user_input_dir):
+            os.makedirs(user_input_dir)
             
         # Sanitize filename
         import re
         safe_filename = re.sub(r'[^a-zA-Z0-9_\-\.가-힣]', '_', file.filename)
-        file_path = os.path.join(input_dir, safe_filename)
+        file_path = os.path.join(user_input_dir, safe_filename)
         
         with open(file_path, "wb") as buffer:
             import shutil
             shutil.copyfileobj(file.file, buffer)
             
-        print(f"File uploaded: {file_path}")
+        print(f"File uploaded by {current_user.username}: {file_path}")
         
         # 3. Trigger Background Processing
         # Initialize progress
         processing_status[safe_filename] = {"status": "Starting...", "percent": 0, "done": False}
 
+        # Determine user output directory
+        user_output_dir = get_user_output_dir(current_user)
+
         # We wrap process_pdf to catch errors without crashing app
-        def safe_process(path, fname):
+        def safe_process(path, fname, output_dir):
+            def update_progress(msg, pct):
+                processing_status[fname] = {"status": msg, "percent": pct, "done": False}
+                
+            try:
+                print(f"Starting background processing for {path}")
+                # Pass user_output_dir to process_pdf
+                process_pdf(path, output_dir=output_dir, progress_callback=update_progress)
+                print(f"Finished background processing for {path}")
+                processing_status[fname] = {"status": "Complete!", "percent": 100, "done": True}
+            except Exception as e:
+                print(f"Background processing failed for {path}: {e}")
+                processing_status[fname] = {"status": f"Error: {str(e)}", "percent": 0, "done": True}
+                
+        background_tasks.add_task(safe_process, file_path, safe_filename, user_output_dir)
+        
+        return {"filename": safe_filename, "message": "Upload successful. Processing started in background."}
+    except Exception as e:
+         print(f"Upload Error: {e}")
+         raise HTTPException(status_code=500, detail=str(e))
             def update_progress(msg, pct):
                 processing_status[fname] = {"status": msg, "percent": pct, "done": False}
                 

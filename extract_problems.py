@@ -137,12 +137,12 @@ def crop_and_save_exam_problems(image_path, extraction_result, output_base):
             
     return problems
 
-def process_pdf(pdf_path, progress_callback=None):
+def process_pdf(pdf_path, output_dir="output_extraction", progress_callback=None):
     if progress_callback: progress_callback("Initializing...", 0)
     print(f"\n--- Processing: {os.path.basename(pdf_path)} ---")
     pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
     
-    exam_output_dir = os.path.join(OUTPUT_DIR, pdf_name)
+    exam_output_dir = os.path.join(output_dir, pdf_name)
     if not os.path.exists(exam_output_dir):
         os.makedirs(exam_output_dir)
     

@@ -10,3 +10,6 @@ Pillow
 python-multipart
 jinja2
 requests
+sqlalchemy
+python-jose[cryptography]
+passlib[bcrypt]
