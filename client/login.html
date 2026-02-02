@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - EduLearn ExamAI</title>
+    <title>로그인 - ExamAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;800&display=swap"
         rel="stylesheet">
@@ -53,12 +53,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <h1 class="text-3xl font-bold tracking-tight">EduLearn</h1>
+                <h1 class="text-3xl font-bold tracking-tight">ExamAI</h1>
             </div>
 
             <div class="space-y-4">
                 <h2 class="text-4xl font-bold leading-tight">
-                    Future Learning,<br>Start Now.
+                    미래를 위한 학습,<br>지금 시작하세요.
                 </h2>
                 <div class="space-y-6 mt-8">
                     <div class="flex items-center gap-4">
@@ -69,8 +69,8 @@
                                 </path>
                             </svg></div>
                         <div>
-                            <h3 class="font-bold text-lg">AI-Powered Exam Generation</h3>
-                            <p class="text-blue-100 text-sm">Create variations instantly with Gemini 3.</p>
+                            <h3 class="font-bold text-lg">AI 기반 문제 변형</h3>
+                            <p class="text-blue-100 text-sm">Gemini 3를 활용해 즉시 새로운 문제를 생성합니다.</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
@@ -81,8 +81,8 @@
                                 </path>
                             </svg></div>
                         <div>
-                            <h3 class="font-bold text-lg">Smart PDF Extraction</h3>
-                            <p class="text-blue-100 text-sm">Automatically parse problems from PDF files.</p>
+                            <h3 class="font-bold text-lg">스마트 PDF 추출</h3>
+                            <p class="text-blue-100 text-sm">PDF 파일에서 자동으로 문제를 인식하고 분류합니다.</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
@@ -93,8 +93,8 @@
                                 </path>
                             </svg></div>
                         <div>
-                            <h3 class="font-bold text-lg">Student Management</h3>
-                            <p class="text-blue-100 text-sm">Track progress and manage users efficiently.</p>
+                            <h3 class="font-bold text-lg">학습 관리</h3>
+                            <p class="text-blue-100 text-sm">진도율과 학습 상태를 체계적으로 관리하세요.</p>
                         </div>
                     </div>
                 </div>
@@ -106,22 +106,22 @@
     <div class="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
         <div class="w-full max-w-md space-y-8">
             <div class="text-center md:text-left">
-                <h2 class="text-3xl font-extrabold text-slate-900" id="page-title">Welcome Back!</h2>
-                <p class="mt-2 text-sm text-slate-500">Please enter your details to continue.</p>
+                <h2 class="text-3xl font-extrabold text-slate-900" id="page-title">환영합니다!</h2>
+                <p class="mt-2 text-sm text-slate-500">계정에 로그인하여 학습을 계속하세요</p>
             </div>
 
             <!-- Toggle (Hidden implementation detail, handled via links) -->
             <div class="flex justify-center md:justify-start gap-6 border-b border-slate-200 pb-4">
                 <button onclick="toggleMode('login')" id="tab-login"
-                    class="text-sm font-bold text-brand-600 border-b-2 border-brand-600 pb-4 -mb-4 transition-colors">Login</button>
+                    class="text-sm font-bold text-brand-600 border-b-2 border-brand-600 pb-4 -mb-4 transition-colors">로그인</button>
                 <button onclick="toggleMode('register')" id="tab-register"
-                    class="text-sm font-bold text-slate-400 hover:text-slate-600 pb-4 -mb-4 transition-colors">Register</button>
+                    class="text-sm font-bold text-slate-400 hover:text-slate-600 pb-4 -mb-4 transition-colors">회원가입</button>
             </div>
 
             <form id="auth-form" class="mt-8 space-y-6">
                 <div class="space-y-5">
                     <div>
-                        <label for="username" class="block text-sm font-medium text-slate-700">Username</label>
+                        <label for="username" class="block text-sm font-medium text-slate-700">아이디</label>
                         <div class="mt-1 relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,12 +131,12 @@
                             </span>
                             <input id="username" name="username" type="text" required
                                 class="appearance-none block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition sm:text-sm"
-                                placeholder="Ex. student123">
+                                placeholder="user123">
                         </div>
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+                        <label for="password" class="block text-sm font-medium text-slate-700">비밀번호</label>
                         <div class="mt-1 relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,18 +155,18 @@
                     <div class="flex items-center">
                         <input id="remember-me" name="remember-me" type="checkbox"
                             class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded">
-                        <label for="remember-me" class="ml-2 block text-sm text-slate-900">Remember me</label>
+                        <label for="remember-me" class="ml-2 block text-sm text-slate-900">로그인 유지</label>
                     </div>
 
                     <div class="text-sm">
-                        <a href="#" class="font-medium text-brand-600 hover:text-brand-500">Forgot password?</a>
+                        <a href="#" class="font-medium text-brand-600 hover:text-brand-500">비밀번호 찾기</a>
                     </div>
                 </div>
 
                 <div>
                     <button type="submit"
                         class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all shadow-lg shadow-slate-900/20">
-                        <span id="submit-text">Log In</span>
+                        <span id="submit-text">로그인</span>
                     </button>
                 </div>
 
@@ -180,7 +180,7 @@
                         <div class="w-full border-t border-slate-200"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-slate-500">Or continue with</span>
+                        <span class="px-2 bg-white text-slate-500">또는</span>
                     </div>
                 </div>
 
@@ -212,7 +212,7 @@
     <script>
         // --- CONFIG ---
         // Dynamically determine base URL for development
-        const API_BASE_URL = "https://web-production-18fc8.up.railway.app";
+        const API_BASE_URL = window.location.origin.includes('localhost') ? 'http://localhost:8000' : 'https://web-production-18fc8.up.railway.app';
         // -------------
 
         let isLogin = true;
@@ -228,13 +228,13 @@
             errorMsg.classList.add('hidden');
 
             if (isLogin) {
-                pageTitle.textContent = "Welcome Back!";
-                submitText.textContent = 'Log In';
+                pageTitle.textContent = "환영합니다!";
+                submitText.textContent = '로그인';
                 tabLogin.className = "text-sm font-bold text-brand-600 border-b-2 border-brand-600 pb-4 -mb-4 transition-colors";
                 tabRegister.className = "text-sm font-bold text-slate-400 hover:text-slate-600 pb-4 -mb-4 transition-colors";
             } else {
-                pageTitle.textContent = "Create Account";
-                submitText.textContent = 'Sign Up Free';
+                pageTitle.textContent = "계정 만들기";
+                submitText.textContent = '무료 회원가입';
                 tabLogin.className = "text-sm font-bold text-slate-400 hover:text-slate-600 pb-4 -mb-4 transition-colors";
                 tabRegister.className = "text-sm font-bold text-brand-600 border-b-2 border-brand-600 pb-4 -mb-4 transition-colors";
             }
@@ -277,7 +277,7 @@
 
                 if (!res.ok) {
                     const err = await res.json();
-                    throw new Error(err.detail || 'Action failed');
+                    throw new Error(err.detail || '작업에 실패했습니다.');
                 }
 
                 if (isLogin) {
@@ -286,7 +286,7 @@
                     localStorage.setItem('username', data.username); // Store username for greeting
                     window.location.href = 'index.html';
                 } else {
-                    alert('Registration successful! Please login.');
+                    alert('회원가입 성공! 로그인해주세요.');
                     toggleMode('login');
                 }
 

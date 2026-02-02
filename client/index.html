@@ -146,7 +146,7 @@
                         d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
             </div>
-            <h1 class="text-xl font-bold text-slate-900 tracking-tight">EduLearn</h1>
+            <h1 class="text-xl font-bold text-slate-900 tracking-tight">ExamAI</h1>
         </div>
 
         <!-- Navigation -->
@@ -159,13 +159,25 @@
                     U
                 </div>
                 <div class="min-w-0">
-                    <p class="text-sm font-bold text-slate-900 truncate" id="user-name-display">Student</p>
-                    <p class="text-xs text-slate-500">Premium Member</p>
+                    <p class="text-sm font-bold text-slate-900 truncate" id="user-name-display">학생</p>
+                    <p class="text-xs text-slate-500">프리미엄 회원</p>
                 </div>
             </div>
 
+            <div class="px-2">
+                <button onclick="document.getElementById('file-upload').click()"
+                    class="w-full flex items-center justify-center gap-2 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-bold shadow-md shadow-brand-500/20 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    PDF 업로드
+                </button>
+                <input type="file" id="file-upload" class="hidden" accept=".pdf" onchange="handleFileUpload(this)">
+            </div>
+
             <div>
-                <h3 class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">My Exams</h3>
+                <h3 class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">나의 시험지</h3>
                 <div id="exam-list" class="space-y-1">
                     <!-- Exam items injected here -->
                 </div>
@@ -181,10 +193,28 @@
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
                     </path>
                 </svg>
-                Sign Out
+                로그아웃
             </button>
         </div>
     </aside>
+
+    <!-- Upload Progress Modal -->
+    <div id="upload-modal"
+        class="fixed inset-0 bg-black/50 z-[60] hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-bold text-slate-900">PDF 분석 중...</h3>
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-600"></div>
+            </div>
+            <p class="text-sm text-slate-500">잠시만 기다려주세요. AI가 문제를 추출하고 있습니다.<br>파일 크기에 따라 1~2분 정도 소요됩니다.</p>
+
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div id="upload-progress-bar" class="bg-brand-600 h-2.5 rounded-full transition-all duration-500"
+                    style="width: 5%"></div>
+            </div>
+            <p id="upload-status-text" class="text-xs text-brand-600 font-bold text-right">시작하는 중...</p>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col h-full relative overflow-hidden">
@@ -198,7 +228,7 @@
                             d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
-                <h2 class="text-lg font-bold text-slate-800" id="current-exam-title">Dashboard</h2>
+                <h2 class="text-lg font-bold text-slate-800" id="current-exam-title">대시보드</h2>
             </div>
 
             <div class="flex items-center gap-4">
@@ -208,7 +238,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <input type="text" placeholder="Search..."
+                    <input type="text" placeholder="문제 검색..."
                         class="bg-transparent border-none focus:outline-none text-sm text-slate-600 w-32 placeholder-slate-400">
                 </div>
             </div>
@@ -220,18 +250,18 @@
             <div class="flex gap-2">
                 <span id="stat-count"
                     class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-semibold text-brand-600 shadow-sm">
-                    Loading stats...
+                    통계 로딩 중...
                 </span>
             </div>
 
             <div class="flex gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
                 <button onclick="setMode('view')" id="btn-view"
                     class="px-3 py-1.5 rounded-lg text-sm font-medium transition-all bg-brand-50 text-brand-700 shadow-sm">
-                    Viewer
+                    문제 보기
                 </button>
                 <button onclick="setMode('generate')" id="btn-generate"
                     class="px-3 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-500 hover:bg-slate-50">
-                    AI Generator
+                    AI 변형 문제
                 </button>
             </div>
         </div>
@@ -243,8 +273,8 @@
             <div id="welcome-banner"
                 class="bg-gradient-to-r from-brand-600 to-indigo-600 rounded-3xl p-8 text-white mb-8 shadow-xl shadow-brand-500/20 relative overflow-hidden">
                 <div class="relative z-10">
-                    <h1 class="text-3xl font-bold mb-2">Welcome back, <span id="banner-username">Student</span>! 👋</h1>
-                    <p class="text-brand-100">Ready to boost your exam scores today?</p>
+                    <h1 class="text-3xl font-bold mb-2">환영합니다, <span id="banner-username">학생</span>님! 👋</h1>
+                    <p class="text-brand-100">오늘도 ExamAI와 함께 성적을 올려보세요!</p>
                 </div>
                 <div class="absolute right-0 top-0 h-full w-1/3 bg-white/10 skew-x-12 transform translate-x-12"></div>
             </div>
@@ -522,6 +552,64 @@
                 overlay.classList.add('opacity-0');
                 setTimeout(() => overlay.classList.add('hidden'), 300);
             }
+        }
+
+        async function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Show Modal
+            const modal = document.getElementById('upload-modal');
+            const pBar = document.getElementById('upload-progress-bar');
+            const pText = document.getElementById('upload-status-text');
+
+            modal.classList.remove('hidden');
+            pBar.style.width = '5%';
+            pText.textContent = "업로드 시작...";
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // 1. Start Upload
+                const res = await fetch(`${API_BASE_URL}/api/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` },
+                    body: formData
+                });
+
+                if (!res.ok) throw new Error("Upload Failed");
+
+                // 2. Poll Progress
+                const filename = file.name;
+                const poll = setInterval(async () => {
+                    try {
+                        const pres = await fetch(`${API_BASE_URL}/api/progress/${filename}`);
+                        const pdata = await pres.json();
+
+                        pBar.style.width = `${Math.max(5, pdata.percent)}%`;
+                        pText.textContent = pdata.status;
+
+                        if (pdata.done) {
+                            clearInterval(poll);
+                            pBar.style.width = '100%';
+                            pText.textContent = "완료!";
+                            setTimeout(() => {
+                                modal.classList.add('hidden');
+                                alert("분석이 완료되었습니다!");
+                                fetchExams(); // Refresh list
+                            }, 1000);
+                        }
+                    } catch (e) { console.error(e); }
+                }, 1000);
+
+            } catch (e) {
+                alert("Upload Error: " + e.message);
+                modal.classList.add('hidden');
+            }
+
+            // Reset input
+            input.value = '';
         }
 
         function logout() {
