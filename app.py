@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import json
+from datetime import datetime
 from typing import List, Dict, Union, Any
 import uvicorn
 from utils import strict_json_parse
@@ -354,7 +355,7 @@ async def generate_variation(req: VariationRequest):
             # Load Images for Analysis (Reuse logic)
             if req.image_url:
                 rel_path = req.image_url.replace("/images/", "")
-                full_path = os.path.join(OUTPUT_DIR, rel_path)
+                full_path = os.path.join(BASE_OUTPUT_DIR, rel_path)
                 if os.path.exists(full_path):
                     img = Image.open(full_path)
                     analysis_parts.append(img)
@@ -362,7 +363,7 @@ async def generate_variation(req: VariationRequest):
             for vis in visuals_safe:
                  if 'image_path' in vis and req.image_url:
                      base_dir = os.path.dirname(req.image_url.replace("/images/", ""))
-                     vis_full_path = os.path.join(OUTPUT_DIR, base_dir, vis['image_path'])
+                     vis_full_path = os.path.join(BASE_OUTPUT_DIR, base_dir, vis['image_path'])
                      if os.path.exists(vis_full_path):
                          v_img = Image.open(vis_full_path)
                          analysis_parts.append(v_img)
@@ -433,7 +434,7 @@ async def generate_variation(req: VariationRequest):
                 # 1. Main Context Image
                 if req.image_url:
                     rel_path = req.image_url.replace("/images/", "")
-                    full_path = os.path.join(OUTPUT_DIR, rel_path)
+                    full_path = os.path.join(BASE_OUTPUT_DIR, rel_path)
                     if os.path.exists(full_path):
                         img = Image.open(full_path)
                         prompt_parts.append(img)
@@ -444,7 +445,7 @@ async def generate_variation(req: VariationRequest):
                      if 'image_path' in vis and req.image_url:
                          # We need req.image_url to know the base directory
                          base_dir = os.path.dirname(req.image_url.replace("/images/", ""))
-                         vis_full_path = os.path.join(OUTPUT_DIR, base_dir, vis['image_path'])
+                         vis_full_path = os.path.join(BASE_OUTPUT_DIR, base_dir, vis['image_path'])
                          if os.path.exists(vis_full_path):
                              v_img = Image.open(vis_full_path)
                              prompt_parts.append(v_img)
@@ -544,14 +545,21 @@ async def generate_variation(req: VariationRequest):
 
     except Exception as e:
         import traceback
-        traceback.print_exc()
-        print(f"Generation Critical Error: {e}")
+        error_msg = str(e)
+        formatted_trace = traceback.format_exc()
+        
+        print(f"Generation Critical Error: {error_msg}")
+        # Log to file
+        with open("server_error.log", "a", encoding="utf-8") as f:
+            f.write(f"\n[{datetime.now()}] ERROR:\n{formatted_trace}\n")
+            
         return {
             "reconstruction_type": "error",
-            "reconstruction_code": f"Server Error: {str(e)}",
+            "reconstruction_code": f"Server Error: {error_msg}",
             "variation_problem": {
                 "header": "System Error",
-                "directive": "An tracking error occurred. Please check server logs.",
+                "directive": f"오류가 발생했습니다: {error_msg}\n(자세한 내용은 server_error.log를 확인하세요)",
+                "options": []
             }
         }
 
