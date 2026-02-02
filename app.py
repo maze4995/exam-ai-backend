@@ -122,21 +122,71 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 # --- Modified Exam Endpoints (User Isolated) ---
 
 @app.get("/api/exams")
-async def list_exams(current_user: User = Depends(get_current_user)):
+async def list_exams(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """List all processed exams in the USER'S private directory."""
     user_dir = get_user_output_dir(current_user)
     
-    exams = []
-    for entry in os.scandir(user_dir):
-        if entry.is_dir() and not entry.name.startswith("crops_"):
-            exams.append(entry.name)
-    return sorted(exams)
+    exams = set() # Use set to avoid duplicates
+    
+    print(f"\n[DEBUG] list_exams called for user: {current_user.username}")
+    print(f"[DEBUG] user_dir: {user_dir}")
+    print(f"[DEBUG] BASE_OUTPUT_DIR: {BASE_OUTPUT_DIR}")
+
+    # 1. User's isolated exams
+    if os.path.exists(user_dir):
+        print(f"[DEBUG] user_dir exists. Scanning...")
+        for entry in os.scandir(user_dir):
+            if entry.is_dir() and not entry.name.startswith("crops_"):
+                exams.add(entry.name)
+    else:
+        print(f"[DEBUG] user_dir does NOT exist.")
+
+    # 2. Legacy/Shared exams (in root output dir)
+    if os.path.exists(BASE_OUTPUT_DIR):
+        print(f"[DEBUG] BASE_OUTPUT_DIR exists. Legacy scanning...")
+        
+        # Get all usernames to exclude them from the list
+        users = db.query(User).all()
+        user_dirs = {u.username for u in users}
+        
+        for entry in os.scandir(BASE_OUTPUT_DIR):
+            # Exclusion 1: Known user directories
+            if not entry.is_dir() or entry.name.startswith("crops_") or entry.name in user_dirs:
+                continue
+                
+            # Exclusion 2: Strict Content Check (Must contain 'extracted_*.json')
+            # User directories usually contain exam folders, not the JSONs directly.
+            # Valid exams MUST have these analysis files.
+            is_exam = False
+            try:
+                for sub in os.scandir(entry.path):
+                    if sub.is_file() and sub.name.startswith("extracted_") and sub.name.endswith(".json"):
+                        is_exam = True
+                        break
+            except Exception:
+                pass
+            
+            if is_exam:
+                exams.add(entry.name)
+            else:
+                 print(f"[DEBUG] Skipping non-exam folder: {entry.name}")
+                
+    results = sorted(list(exams))
+    print(f"[DEBUG] Found exams: {results}")
+    return results
 
 @app.delete("/api/exams/{exam_name}")
 async def delete_exam(exam_name: str, current_user: User = Depends(get_current_user)):
     """Delete an exam and its associated data for the current user."""
     user_dir = get_user_output_dir(current_user)
     exam_path = os.path.join(user_dir, exam_name)
+    
+    # Fallback to legacy root path
+    if not os.path.exists(exam_path):
+        exam_path = os.path.join(BASE_OUTPUT_DIR, exam_name)
     
     if not os.path.exists(exam_path):
         raise HTTPException(status_code=404, detail="Exam not found")
@@ -154,6 +204,10 @@ async def get_exam_problems(exam_name: str, current_user: User = Depends(get_cur
     """Retrieve problems for a specific exam belonging to the user."""
     user_dir = get_user_output_dir(current_user)
     exam_path = os.path.join(user_dir, exam_name)
+    
+    # Fallback to legacy root path
+    if not os.path.exists(exam_path):
+        exam_path = os.path.join(BASE_OUTPUT_DIR, exam_name)
     
     if not os.path.exists(exam_path):
         raise HTTPException(status_code=404, detail="Exam not found")
@@ -275,31 +329,40 @@ async def generate_variation(req: VariationRequest):
         if has_visuals:
             # --- MODE A: RECONSTRUCTION + VARIATION (Visuals Present) ---
             instruction = """
-            You are an expert scientific illustrator and educator in Korea.
-            Your task is to:
-            1. ANALYZE the provided problem image(s).
-            2. RECONSTRUCT the main diagram/graph as high-quality **SVG CODE**.
-               - Output RAW <svg> code. Do NOT use markdown code blocks.
-               - Ensure specific numbers/labels from the original are preserved or logically adapted.
-               - Make it look PROFESSIONAL (text-book quality).
-               - Do NOT generate Python code. ONLY SVG.
-            3. CREATE A SIMILAR PROBLEM based on the logic of the original.
-               - **LANGUAGE: KOREAN (한국어).** The problem text, scenario, and directives MUST be in natural, academic Korean.
-               - **TABLES (표):** If the problem contains a data table, provide it in the 'table' field using Markdown format.
-               - **PROPOSITIONS (보기):** If the problem involves matching statements (e.g., ㄱ, ㄴ, ㄷ), you MUST provide these in the 'propositions' field as a single formatted string.
-               - **OPTIONS (선지):** You MUST provide 5 distinct choices (text) for the answer. Do NOT leave 'options' empty.
-            
+            당신은 전문적인 과학 교과서 삽화가이자 교육용 인포그래픽 복원 전문가입니다.
+            당신의 목표는 제공된 원본 이미지(Source Image)를 기반으로, 노이즈가 제거된 깨끗하고 전문적인 **'풀 컬러 교과서 스타일 삽화'**를 재구성하는 것입니다.
+
+            반드시 준수해야 할 핵심 지침:
+
+            1. **노이즈 및 필기 흔적 제거 (NOISE REMOVAL):**
+               - 이미지 내의 손글씨, 낙서, 임의의 동그라미, 밑줄 등 학생의 필기 흔적과 종이의 질감, 얼룩을 완벽하게 제거하십시오.
+               - 오직 **'인쇄된 원본 요소'**만 남겨야 합니다.
+
+            2. **원본 색상 및 데이터 보존 (COLOR & DATA):**
+               - 색상 유지: 원본 이미지에 사용된 색상 체계를 그대로 계승하십시오. (예: 화산 내부의 붉은 마그마, 상태를 나타내는 색상 지표 등).
+               - 선명도 개선: 색상은 유지하되, 출판물에 적합하도록 채도를 정돈하고 경계를 선명하게 표현하십시오. 배경은 가급적 깨끗한 흰색으로 처리하여 개체가 돋보이게 하십시오.
+
+            3. **시각적 요소의 정교화 (VECTOR STYLE RECONSTRUCTION):**
+               - **SVG CODE 생성 필수:** 모든 선은 매끄러운 벡터 스타일로 표현하고, 불필요한 픽셀 깨짐이 없어야 합니다.
+               - 텍스트 및 레이블: (가), (나), A, B, C와 같은 기호와 수치, 단위(μg/m³ 등)는 가독성이 뛰어난 표준 고딕 계열 폰트로 다시 작성하십시오.
+               - 결과물은 반드시 **RAW <svg> 코드**로 `reconstruction_code` 필드에 제공해야 합니다.
+
+            4. **유사 문제 생성 (GENERATE SIMILAR PROBLEM):**
+               - [원본 이미지]의 시각적 형태와 논리를 바탕으로, 새로운 유사 문제를 생성하십시오. 
+               - **언어:** 한국어 (Korean) - 자연스럽고 학술적인 어조.
+               - **내용:** 원본 문제의 핵심 개념을 유지하되, 수치나 상황을 변형하여 새로운 문제를 만드십시오.
+
             OUTPUT FORMAT (JSON):
             {
                 "reconstruction_type": "svg",
                 "reconstruction_code": "<svg>...</svg>",
                 "variation_problem": {
                     "header": "유사 문제",
-                    "scenario": "New scenario in Korean...",
-                    "table": "| Header 1 | Header 2 |\\n|---|---|\\n| Val 1 | Val 2 |",
-                    "directive": "New directive in Korean...",
-                    "propositions": "ㄱ. Statement A...\\nㄴ. Statement B...\\nㄷ. Statement C...",
-                    "options": ["1번 보기", "2번 보기", "3번 보기", "4번 보기", "5번 보기"]
+                    "scenario": "새로운 문제 시나리오 (한국어)...",
+                    "table": "| 헤더1 | 헤더2 |\\n|---|---|\\n| 값1 | 값2 |",
+                    "directive": "새로운 지시문 (한국어)...",
+                    "propositions": "ㄱ. 보기 A...\\nㄴ. 보기 B...\\nㄷ. 보기 C...",
+                    "options": ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"]
                 }
             }
             """
@@ -516,6 +579,54 @@ async def get_manifest():
 async def get_icon():
     from fastapi.responses import FileResponse
     return FileResponse("icon.png", media_type="image/png")
+
+# --- Image Serving Proxy (Fix for User Isolation) ---
+@app.get("/api/images/{exam_name}/{image_path:path}")
+async def get_exam_image(
+    exam_name: str, 
+    image_path: str, 
+    token: str = None
+):
+    """
+    Serve images from Exam directory.
+    Auth: Requires 'token' query parameter for access validation.
+    Checks User's private directory first, then Legacy shared directory.
+    """
+    # 1. Manual Auth Validation (since img tags can't send headers easily)
+    if not token:
+         raise HTTPException(status_code=401, detail="Token required for image access")
+    
+    try:
+        from jose import jwt
+        from auth import SECRET_KEY, ALGORITHM
+        from database import get_db, User
+        
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401)
+            
+        # Get DB session manually (hacky but quick for this specific endpoint pattern)
+        # Better: Depedency injection, but let's keep it simple.
+        # Actually, let's just trust the token username for directory lookup?
+        # Ideally check DB, but file isolation relies on username.
+        
+    except Exception:
+         raise HTTPException(status_code=401, detail="Invalid Token")
+
+    user_dir = os.path.join(BASE_OUTPUT_DIR, username)
+    
+    # 2. Check User Dir
+    file_path = os.path.join(user_dir, exam_name, image_path)
+    if not os.path.exists(file_path):
+        # 3. Check Legacy Dir
+        file_path = os.path.join(BASE_OUTPUT_DIR, exam_name, image_path)
+        
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+        
+    from fastapi.responses import FileResponse
+    return FileResponse(file_path)
 
 # Mount client directory to serve frontend (Must be last)
 app.mount("/", StaticFiles(directory="client", html=True), name="frontend")
