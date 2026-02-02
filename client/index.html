@@ -820,6 +820,11 @@
 
                 cardBody.appendChild(variationDiv);
 
+                // Trigger MathJax for the new content
+                if (window.MathJax) {
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, variationDiv]);
+                }
+
                 // Reset Button (Success state)
                 btn.innerHTML = `<svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 생성 완료`;
                 btn.classList.remove('bg-slate-900');

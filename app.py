@@ -327,10 +327,66 @@ async def generate_variation(req: VariationRequest):
         prompt_parts = []
         
         if has_visuals:
-            # --- MODE A: RECONSTRUCTION + VARIATION (Visuals Present) ---
-            instruction = """
+            # --- STEP 1: IMAGE ANALYSIS (New Request) ---
+            print("\n[Step 1] Analyzing Image Structure...")
+            analysis_instruction = """
+            [지시사항] 업로드한 이미지를 분석하여 다음의 구조에 따라 상세하게 설명해 줘. 모든 설명은 전문적이고 깔끔한 교과서 삽화 분석 스타일을 유지해야 해.
+
+            1. 전체적인 구조:
+            - 이미지의 레이아웃(예: 좌우 배치, 상하 배치)과 기호(예: (가), (나), 화살표)를 파악해 줘.
+            - 전반적인 시각적 스타일(예: 삽화, 사진, 그래프, 인포그래픽)을 정의해 줘.
+
+            2. 각 섹션별 상세 설명 (섹션이 나뉘어 있을 경우):
+            - 주제: 해당 섹션이 나타내는 핵심 개념이나 사물.
+            - 스타일: 색상 구성(흑백, 컬러), 선의 특징, 배경 처리 방식.
+            - 핵심 요소:
+              > * 이미지에 나타난 주요 사물, 인물, 기구 등에 대한 정밀한 묘사.
+              > * 포함된 모든 텍스트, 숫자, 단위(μg/m³, %, °C 등)를 정확하게 기록.
+              > * 그래프의 경우 형태(원형, 막대, 선)와 데이터의 시각적 비중(예: 게이지가 채워진 정도)을 설명.
+
+            3. 기타 특징:
+            - 배경의 흐림 정도나 강조된 부분 등 학습에 도움이 될 만한 시각적 장치들을 기술해 줘.
+            """
+            
+            # Prepare Analysis Prompt
+            analysis_parts = [analysis_instruction]
+            
+            # Load Images for Analysis (Reuse logic)
+            if req.image_url:
+                rel_path = req.image_url.replace("/images/", "")
+                full_path = os.path.join(OUTPUT_DIR, rel_path)
+                if os.path.exists(full_path):
+                    img = Image.open(full_path)
+                    analysis_parts.append(img)
+            
+            for vis in visuals_safe:
+                 if 'image_path' in vis and req.image_url:
+                     base_dir = os.path.dirname(req.image_url.replace("/images/", ""))
+                     vis_full_path = os.path.join(OUTPUT_DIR, base_dir, vis['image_path'])
+                     if os.path.exists(vis_full_path):
+                         v_img = Image.open(vis_full_path)
+                         analysis_parts.append(v_img)
+
+            # Call Model for Analysis
+            model = genai.GenerativeModel('models/gemini-3-pro-image-preview')
+            try:
+                analysis_response = model.generate_content(analysis_parts)
+                analysis_text = analysis_response.text
+                print(f"\n[Analysis Result]:\n{analysis_text[:200]}...\n")
+            except Exception as e:
+                print(f"[Analysis Error] Skipping analysis step: {e}")
+                analysis_text = "Image analysis failed. Proceed with direct reconstruction."
+
+            # --- STEP 2: GENERATION (Existing Logic + Injected Analysis) ---
+            instruction = f"""
             당신은 전문적인 과학 교과서 삽화가이자 교육용 인포그래픽 복원 전문가입니다.
             당신의 목표는 제공된 원본 이미지(Source Image)를 기반으로, 노이즈가 제거된 깨끗하고 전문적인 **'풀 컬러 교과서 스타일 삽화'**를 재구성하는 것입니다.
+
+            **[참고: 이미지 정밀 분석 결과]**
+            아래 분석 내용을 바탕으로 이미지를 더욱 정확하게 재구성하십시오.
+            ---
+            {analysis_text}
+            ---
 
             반드시 준수해야 할 핵심 지침:
 
@@ -344,6 +400,10 @@ async def generate_variation(req: VariationRequest):
 
             3. **시각적 요소의 정교화 (VECTOR STYLE RECONSTRUCTION):**
                - **SVG CODE 생성 필수:** 모든 선은 매끄러운 벡터 스타일로 표현하고, 불필요한 픽셀 깨짐이 없어야 합니다.
+               - **스타일 (FLAT DESIGN):** 복잡한 질감(예: 바위 표면, 물결)을 억지로 그리지 말고, **단순화된 '플랫 디자인(Flat Design)'** 스타일로 변환하십시오.
+               - **색상:** 그라데이션 대신 **단색(Solid Color)** 위주로 사용하여 깔끔하게 표현하십시오.
+               - **수식 표기 (LaTeX):** 모든 수식, 숫자, 단위(m/s², kg 등)는 반드시 LaTeX 문법을 사용하여 **`$` 기호로 감싸야 합니다.** (예: `$3\text{m/s}^2$`, `$10\text{kg}$`)
+               - **금지 사항:** `<image>` 태그를 사용하여 비트맵 이미지를 임베딩하지 마십시오. 오직 벡터 요소(`<path>`, `<rect>`, `<circle>` 등)만 사용해야 합니다.
                - 텍스트 및 레이블: (가), (나), A, B, C와 같은 기호와 수치, 단위(μg/m³ 등)는 가독성이 뛰어난 표준 고딕 계열 폰트로 다시 작성하십시오.
                - 결과물은 반드시 **RAW <svg> 코드**로 `reconstruction_code` 필드에 제공해야 합니다.
 
@@ -353,18 +413,18 @@ async def generate_variation(req: VariationRequest):
                - **내용:** 원본 문제의 핵심 개념을 유지하되, 수치나 상황을 변형하여 새로운 문제를 만드십시오.
 
             OUTPUT FORMAT (JSON):
-            {
+            {{
                 "reconstruction_type": "svg",
                 "reconstruction_code": "<svg>...</svg>",
-                "variation_problem": {
+                "variation_problem": {{
                     "header": "유사 문제",
                     "scenario": "새로운 문제 시나리오 (한국어)...",
                     "table": "| 헤더1 | 헤더2 |\\n|---|---|\\n| 값1 | 값2 |",
                     "directive": "새로운 지시문 (한국어)...",
                     "propositions": "ㄱ. 보기 A...\\nㄴ. 보기 B...\\nㄷ. 보기 C...",
                     "options": ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"]
-                }
-            }
+                }}
+            }}
             """
             prompt_parts.append(instruction)
             
@@ -450,10 +510,16 @@ async def generate_variation(req: VariationRequest):
         elif json_str.startswith("```"):
              json_str = json_str[3:-3].strip()
             
-        # Robust JSON Cleaning: Escape backslashes that aren't already escaped
+        # Robust JSON Cleaning
         try:
             import re
+            # 1. Protect common LaTeX commands that start with JSON escape chars (t, n, r, b, f)
+            # Use negative lookbehind to ensure we don't double-escape
+            json_str = re.sub(r'(?<!\\)\\(t(?=ext|imes|au|heta|an)|n(?=u|eq)|r(?=ho|ight)|b(?=eta)|f(?=rac|phi))', r'\\\\\1', json_str)
+            
+            # 2. General escape for other chars (existing logic)
             json_str = re.sub(r'\\(?![/u"bfnrt\\])', r'\\\\', json_str)
+            
             result = json.loads(json_str)
         except json.JSONDecodeError as e:
             print(f"[JSON Error] Failed to parse: {e}")
