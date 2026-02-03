@@ -1056,15 +1056,30 @@
             drawingCanvas = document.getElementById('solve-canvas');
             if (!drawingCanvas) return;
 
-            // Sync canvas size with image + extra padding for scratchpad
-            const paddingHeight = 500; // Extra writing space
-            drawingCanvas.width = imgObj.getBoundingClientRect().width;
-            drawingCanvas.height = imgObj.getBoundingClientRect().height + paddingHeight;
+            // Sync canvas size with image + extra padding for scratchpad (Horizontal)
+            const paddingWidth = 800; // Extra writing space on right
+
+            // Need to get image loaded dimensions (naturalWidth might be better if no CSS constraint)
+            // But getBoundingClientRect() respects current render size.
+            // Since we want to make canvas bigger than image, we need to enforce image placement.
+
+            const imgRect = imgObj.getBoundingClientRect();
+            // Ensure min height for usability
+            const canvasHeight = Math.max(imgRect.height, 600);
+            const canvasWidth = imgRect.width + paddingWidth;
+
+            drawingCanvas.width = canvasWidth;
+            drawingCanvas.height = canvasHeight;
 
             // Make sure the wrapper matches the canvas size
             const wrapper = document.getElementById('drawing-wrapper');
             wrapper.style.width = `${drawingCanvas.width}px`;
             wrapper.style.height = `${drawingCanvas.height}px`;
+
+            // Align image to left
+            imgObj.style.position = 'absolute';
+            imgObj.style.left = '0';
+            imgObj.style.top = '0';
 
             drawingCtx = drawingCanvas.getContext('2d');
             drawingCtx.strokeStyle = "#ef4444"; // Red pen
