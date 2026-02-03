@@ -1056,9 +1056,15 @@
             drawingCanvas = document.getElementById('solve-canvas');
             if (!drawingCanvas) return;
 
-            // Sync canvas size with image
-            drawingCanvas.width = imgObj.width;
-            drawingCanvas.height = imgObj.height;
+            // Sync canvas size with image + extra padding for scratchpad
+            const paddingHeight = 500; // Extra writing space
+            drawingCanvas.width = imgObj.getBoundingClientRect().width;
+            drawingCanvas.height = imgObj.getBoundingClientRect().height + paddingHeight;
+
+            // Make sure the wrapper matches the canvas size
+            const wrapper = document.getElementById('drawing-wrapper');
+            wrapper.style.width = `${drawingCanvas.width}px`;
+            wrapper.style.height = `${drawingCanvas.height}px`;
 
             drawingCtx = drawingCanvas.getContext('2d');
             drawingCtx.strokeStyle = "#ef4444"; // Red pen
@@ -1173,6 +1179,12 @@
                 if (!res.ok) throw new Error("Feedback failed");
                 const data = await res.json();
 
+                // Format Feedback (Bold & Newlines)
+                // Replace **text** with <strong>text</strong>
+                let formattedFeedback = data.feedback
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>');
+
                 // Add AI response bubble
                 contentDiv.innerHTML += `
             <div class="flex justify-start animate-fade-in-up">
@@ -1181,7 +1193,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         AI 선생님
                     </div>
-                    ${data.feedback.replace(/\n/g, '<br>')}
+                    ${formattedFeedback}
                 </div>
             </div>`;
 
