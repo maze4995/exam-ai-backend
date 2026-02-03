@@ -727,8 +727,7 @@
             <!-- Content -->
             <div class="space-y-6">
                 ${prob.scenario ? `<div
-                    class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-center break-keep tracking-tight">
-                    ${(prob.scenario || '').trim()}</div>` : ''}
+                    class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-center break-keep tracking-tight">${(prob.scenario || '').trim()}</div>` : ''}
                     
                 ${chartsHtml}
                 
@@ -737,8 +736,7 @@
                 </div>
                 
                 ${prob.propositions ? `<div
-                    class="p-5 bg-white rounded-xl border-2 border-slate-100 text-sm text-slate-800 leading-loose text-center whitespace-pre-wrap font-medium break-keep tracking-tight">
-                    ${(prob.propositions || '').trim()}</div>` : ''}
+                    class="p-5 bg-white rounded-xl border-2 border-slate-100 text-sm text-slate-800 leading-loose text-center whitespace-pre-wrap font-medium break-keep tracking-tight">${(prob.propositions || '').trim()}</div>` : ''}
                     
                 ${optionsHtml}
             </div>
