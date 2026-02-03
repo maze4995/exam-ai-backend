@@ -669,6 +669,10 @@
         }
 
         function createProblemCard(prob, isGenerateMode) {
+            // Register problem for global access
+            window.problemsMap = window.problemsMap || {};
+            window.problemsMap[prob.id] = prob;
+
             const div = document.createElement('div');
             div.className = 'problem-card rounded-2xl overflow-hidden flex flex-col relative group w-full';
 
@@ -753,6 +757,10 @@
                         clip-rule="evenodd" />
                 </svg>
                 AI 변형 문제 생성
+            </button>
+            <button onclick="openSolveModal(this.dataset.id)" data-id="${prob.id}" class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                풀이 모드
             </button>
         </div>` : ''}
         `;
@@ -918,6 +926,278 @@
             localStorage.removeItem('token');
             localStorage.removeItem('username');
             window.location.href = 'login.html';
+        }
+    </script>
+
+    <!-- Solve Mode Modal -->
+    <div id="solve-modal"
+        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex overflow-hidden border border-slate-700">
+            <!-- Left: Drawing Area -->
+            <div class="flex-1 bg-slate-100 relative flex flex-col">
+                <div class="p-4 bg-white border-b border-slate-200 flex justify-between items-center z-10 shadow-sm">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2 text-lg">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                            </path>
+                        </svg>
+                        풀이 모드 (Solve Mode)
+                    </h3>
+                    <div class="flex gap-2">
+                        <button onclick="clearCanvas()"
+                            class="px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-slate-200 bg-white">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg>
+                            지우기
+                        </button>
+                        <button onclick="closeSolveModal()"
+                            class="px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 bg-white">닫기</button>
+                    </div>
+                </div>
+
+                <div id="canvas-container"
+                    class="flex-1 relative overflow-auto touch-none bg-slate-50/50 flex items-center justify-center p-8">
+                    <div id="drawing-wrapper"
+                        class="relative shadow-2xl bg-white rounded-lg overflow-hidden border border-slate-200">
+                        <img id="solve-problem-img" class="max-w-full pointer-events-none select-none max-h-[70vh]" />
+                        <canvas id="solve-canvas" class="absolute inset-0 cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <div
+                    class="p-4 bg-white border-t border-slate-200 flex justify-between items-center z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                    <div class="text-xs text-slate-400 font-medium">
+                        ✏️ 마우스나 터치로 풀이를 적어보세요.
+                    </div>
+                    <button onclick="getFeedback()" id="feedback-btn"
+                        class="flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                            </path>
+                        </svg>
+                        AI 튜터 피드백 받기
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Feedback Chat -->
+            <div class="w-96 bg-white border-l border-slate-200 flex flex-col shadow-xl z-20">
+                <div class="p-5 border-b border-slate-100 bg-slate-50 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800">AI 튜터 피드백</h4>
+                        <p class="text-xs text-slate-500">실시간 분석 중...</p>
+                    </div>
+                </div>
+                <div id="feedback-content"
+                    class="flex-1 p-5 overflow-y-auto space-y-4 text-sm text-slate-700 leading-relaxed scrollbar-thin bg-white">
+                    <div class="text-center text-slate-400 mt-20 flex flex-col items-center gap-2">
+                        <svg class="w-12 h-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                            </path>
+                        </svg>
+                        <span>문제를 풀고 <strong>[피드백 받기]</strong> 버튼을<br>눌러보세요!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Solve Mode Logic ---
+        let drawingCanvas, drawingCtx;
+        let isDrawing = false;
+        let currentSolveProblem = null;
+        let canvasScale = 1;
+
+        function openSolveModal(probId) {
+            const prob = window.problemsMap ? window.problemsMap[probId] : null;
+            if (!prob) { alert("문제 데이터를 찾을 수 없습니다."); return; }
+
+            currentSolveProblem = prob;
+            document.getElementById('solve-modal').classList.remove('hidden');
+
+            // Setup Image
+            const imgObj = document.getElementById('solve-problem-img');
+            imgObj.src = prob.image_url;
+
+            // Reset Feedback
+            document.getElementById('feedback-content').innerHTML = `
+        <div class="text-center text-slate-400 mt-20 flex flex-col items-center gap-2">
+            <svg class="w-12 h-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            <span>문제를 풀고 <strong>[피드백 받기]</strong> 버튼을<br>눌러보세요!</span>
+        </div>`;
+
+            // Init Canvas when image loads
+            imgObj.onload = () => {
+                initCanvas(imgObj);
+            };
+        }
+
+        function closeSolveModal() {
+            document.getElementById('solve-modal').classList.add('hidden');
+            currentSolveProblem = null;
+        }
+
+        function initCanvas(imgObj) {
+            drawingCanvas = document.getElementById('solve-canvas');
+            if (!drawingCanvas) return;
+
+            // Sync canvas size with image
+            drawingCanvas.width = imgObj.width;
+            drawingCanvas.height = imgObj.height;
+
+            drawingCtx = drawingCanvas.getContext('2d');
+            drawingCtx.strokeStyle = "#ef4444"; // Red pen
+            drawingCtx.lineWidth = 3;
+            drawingCtx.lineJoin = "round";
+            drawingCtx.lineCap = "round";
+
+            // Events
+            drawingCanvas.onmousedown = startDrawing;
+            drawingCanvas.onmousemove = draw;
+            drawingCanvas.onmouseup = stopDrawing;
+            drawingCanvas.onmouseout = stopDrawing;
+
+            // Touch events
+            drawingCanvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            drawingCanvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            drawingCanvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function getMousePos(evt) {
+            const rect = drawingCanvas.getBoundingClientRect();
+            const scaleX = drawingCanvas.width / rect.width;
+            const scaleY = drawingCanvas.height / rect.height;
+            return {
+                x: (evt.clientX - rect.left) * scaleX,
+                y: (evt.clientY - rect.top) * scaleY
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            drawingCtx.beginPath();
+            const pos = getMousePos(e);
+            drawingCtx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getMousePos(e);
+            drawingCtx.lineTo(pos.x, pos.y);
+            drawingCtx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        // Touch support helpers
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousedown", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            drawingCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            drawingCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function clearCanvas() {
+            if (!drawingCtx) return;
+            drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        }
+
+        async function getFeedback() {
+            if (!currentSolveProblem) return;
+
+            const btn = document.getElementById('feedback-btn');
+            const contentDiv = document.getElementById('feedback-content');
+
+            // Combine image + handwriting
+            // We really want just the handwriting to overlay, but for AI context, sending the stroke data or merged image?
+            // Let's send the handwriting PNG (transparent) and let Gemini see it. 
+            // Actually Gemini works best if we send the 'handwriting' as an image. 
+            // Our backend prompt says "Attached image is the student's handwriting".
+            // It's transparent. Should be fine.
+
+            const dataURL = drawingCanvas.toDataURL('image/png');
+
+            // Loading State
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> 분석 중...`;
+
+            // Add user message bubble
+            contentDiv.innerHTML += `
+        <div class="flex justify-end animate-fade-in-up">
+            <div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none shadow-md max-w-[85%] text-sm">
+                피드백을 요청했어요. (필기 전송)
+            </div>
+        </div>`;
+            contentDiv.scrollTop = contentDiv.scrollHeight;
+
+            try {
+                const res = await fetch(API_BASE_URL + '/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+                    body: JSON.stringify({
+                        problem_context: currentSolveProblem,
+                        handwriting_image: dataURL
+                    })
+                });
+
+                if (!res.ok) throw new Error("Feedback failed");
+                const data = await res.json();
+
+                // Add AI response bubble
+                contentDiv.innerHTML += `
+            <div class="flex justify-start animate-fade-in-up">
+                <div class="bg-slate-100 text-slate-800 p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[90%] text-sm leading-relaxed border border-slate-200">
+                    <div class="font-bold text-brand-600 mb-1 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        AI 선생님
+                    </div>
+                    ${data.feedback.replace(/\n/g, '<br>')}
+                </div>
+            </div>`;
+
+            } catch (err) {
+                console.error(err);
+                contentDiv.innerHTML += `
+            <div class="flex justify-start animate-fade-in-up">
+                <div class="bg-red-50 text-red-600 p-3 rounded-2xl rounded-tl-none border border-red-100 text-sm">
+                    오류가 발생했어요: ${err.message}
+                </div>
+            </div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg> AI 튜터 피드백 받기`;
+                contentDiv.scrollTop = contentDiv.scrollHeight;
+            }
         }
     </script>
 </body>

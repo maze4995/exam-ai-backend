@@ -6,6 +6,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import json
+import base64
+import io
+from PIL import Image
 from datetime import datetime
 from typing import List, Dict, Union, Any
 import uvicorn
@@ -704,6 +707,68 @@ async def get_exam_image(
         
     from fastapi.responses import FileResponse
     return FileResponse(file_path)
+
+    from fastapi.responses import FileResponse
+    return FileResponse(file_path)
+
+class FeedbackRequest(BaseModel):
+    problem_context: Dict[str, Any]
+    handwriting_image: str
+
+@app.post("/api/feedback")
+async def get_feedback(req: FeedbackRequest):
+    try:
+        if not api_key:
+             raise HTTPException(status_code=500, detail="GEMINI_API_KEY not set")
+
+        # 1. Decode Image
+        try:
+            # Remove header if present (data:image/png;base64,...)
+            if "base64," in req.handwriting_image:
+                base64_data = req.handwriting_image.split("base64,")[1]
+            else:
+                base64_data = req.handwriting_image
+            
+            image_bytes = base64.b64decode(base64_data)
+            student_image = Image.open(io.BytesIO(image_bytes))
+        except Exception as e:
+            print(f"Image Decode Error: {e}")
+            raise HTTPException(status_code=400, detail="Invalid image data")
+
+        # 2. Construct Prompt
+        context = req.problem_context
+        prompt = f"""
+        당신은 친절하고 유능한 **수학/과학 AI 개인 과외 선생님(AI Tutor)**입니다.
+        
+        [문제 정보]
+        - 지문(Scenario): {context.get('scenario', '')}
+        - 질문(Directive): {context.get('directive', '')}
+        - 보기(Propositions): {context.get('propositions', '')}
+        
+        [학생의 필기 풀이]
+        함께 제공된 이미지는 학생이 이 문제를 풀기 위해 작성한 필기 내용입니다.
+        
+        [요청사항]
+        1. **필기 분석:** 학생이 어디까지 풀었는지, 어떤 논리로 접근했는지 파악하세요.
+        2. **피드백 제공:**
+           - 정답을 바로 알려주지 마세요.
+           - 학생이 멈춘 부분이나 논리적 오류가 있는 부분에 대해 **틴트(Hint)**나 **유도 질문**을 던져주세요.
+           - 계산 실수가 있다면 그 부분을 짚어주세요.
+           - 만약 필기가 거의 없거나 의미를 알 수 없다면, "어떻게 접근해야 할지 모르겠나요?"와 같이 문제 해결의 실마리를 제공하세요.
+        3. **어조:** 학생을 격려하는 부드럽고 친절한 말투("해요체")를 사용하세요. 한국어로 답변하세요.
+        """
+        
+        # 3. Call Gemini (Flash model for speed)
+        # Using a fast model suitable for real-time interaction
+        model = genai.GenerativeModel('models/gemini-2.0-flash-exp') 
+        response = model.generate_content([prompt, student_image])
+        
+        return {"feedback": response.text}
+        
+    except Exception as e:
+        print(f"Feedback Error: {e}")
+        # Return a polite error message instead of 500 to keep UI smooth
+        return {"feedback": "죄송해요, 풀이를 분석하는 도중에 문제가 생겼어요. 다시 시도해 주시겠어요?"}
 
 # Mount client directory to serve frontend (Must be last)
 app.mount("/", StaticFiles(directory="client", html=True), name="frontend")
