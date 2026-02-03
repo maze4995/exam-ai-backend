@@ -1056,30 +1056,25 @@
             drawingCanvas = document.getElementById('solve-canvas');
             if (!drawingCanvas) return;
 
-            // Sync canvas size with image + extra padding for scratchpad (Horizontal)
-            const paddingWidth = 800; // Extra writing space on right
+            // Sync canvas size with image + extra padding for scratchpad (Vertical)
+            const paddingHeight = 600; // Extra writing space on bottom
 
-            // Need to get image loaded dimensions (naturalWidth might be better if no CSS constraint)
-            // But getBoundingClientRect() respects current render size.
-            // Since we want to make canvas bigger than image, we need to enforce image placement.
+            // Layout: Vertical (Image Top, White Space Bottom)
+            const currentWidth = imgObj.getBoundingClientRect().width;
+            const currentHeight = imgObj.getBoundingClientRect().height;
 
-            const imgRect = imgObj.getBoundingClientRect();
-            // Ensure min height for usability
-            const canvasHeight = Math.max(imgRect.height, 600);
-            const canvasWidth = imgRect.width + paddingWidth;
-
-            drawingCanvas.width = canvasWidth;
-            drawingCanvas.height = canvasHeight;
+            drawingCanvas.width = currentWidth;
+            drawingCanvas.height = currentHeight + paddingHeight;
 
             // Make sure the wrapper matches the canvas size
             const wrapper = document.getElementById('drawing-wrapper');
             wrapper.style.width = `${drawingCanvas.width}px`;
             wrapper.style.height = `${drawingCanvas.height}px`;
 
-            // Align image to left
-            imgObj.style.position = 'absolute';
-            imgObj.style.left = '0';
-            imgObj.style.top = '0';
+            // Reset image position (in case it was absolute from previous horizontal layout)
+            imgObj.style.position = 'relative';
+            imgObj.style.left = 'auto';
+            imgObj.style.top = 'auto';
 
             drawingCtx = drawingCanvas.getContext('2d');
             drawingCtx.strokeStyle = "#ef4444"; // Red pen
