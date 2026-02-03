@@ -186,8 +186,8 @@ def process_pdf(pdf_path, output_dir="output_extraction", progress_callback=None
     if progress_callback: progress_callback(f"Converted PDF to {len(image_paths)} images.", 10)
     
     import time
-    # Skip cover page if it has many pages
-    start_index = 1 if len(image_paths) > 2 else 0
+    # Process all pages from the beginning
+    start_index = 0
     
     for i in range(start_index, len(image_paths)):
         img_path = image_paths[i]
