@@ -760,7 +760,7 @@ async def get_feedback(req: FeedbackRequest):
         
         # 3. Call Gemini (Flash model for speed)
         # Using a fast model suitable for real-time interaction
-        model = genai.GenerativeModel('models/gemini-2.0-flash-exp') 
+        model = genai.GenerativeModel('models/gemini-1.5-flash') 
         response = model.generate_content([prompt, student_image])
         
         return {"feedback": response.text}
