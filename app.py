@@ -371,7 +371,7 @@ async def generate_variation(req: VariationRequest):
                          analysis_parts.append(v_img)
 
             # Call Model for Analysis
-            model = genai.GenerativeModel('models/gemini-2.5-flash-image')
+            model = genai.GenerativeModel('models/gemini-3-pro-image-preview')
             try:
                 analysis_response = model.generate_content(analysis_parts)
                 analysis_text = analysis_response.text
@@ -497,7 +497,7 @@ async def generate_variation(req: VariationRequest):
     
         # 4. Call Generation Model
         # Use the specific model requested
-        model = genai.GenerativeModel('models/gemini-2.5-flash-image')
+        model = genai.GenerativeModel('models/gemini-3-pro-image-preview')
         
         response = model.generate_content(prompt_parts)
         
