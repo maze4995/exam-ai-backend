@@ -675,7 +675,7 @@
             const optionsHtml = (prob.options && prob.options.length) ?
                 `<div class="grid grid-cols-1 gap-2 mt-4">${prob.options.map(opt =>
                     `<div
-                class="text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg border border-slate-100 content-text text-left hover:bg-white hover:border-brand-200 transition-colors cursor-pointer">
+                class="text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg border border-slate-100 content-text text-center hover:bg-white hover:border-brand-200 transition-colors cursor-pointer">
                 ${opt}</div>`
                 ).join('')}</div>` : '';
 
@@ -727,17 +727,17 @@
             <!-- Content -->
             <div class="space-y-6">
                 ${prob.scenario ? `<div
-                    class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-left break-keep tracking-tight">
+                    class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-center break-keep tracking-tight">
                     ${(prob.scenario || '').trim()}</div>` : ''}
                     
                 ${chartsHtml}
                 
                 <div class="pl-2 border-l-4 border-brand-500">
-                    <h3 class="text-lg font-bold text-slate-900 leading-relaxed whitespace-pre-wrap break-keep text-left">${(prob.directive || '').trim()}</h3>
+                    <h3 class="text-lg font-bold text-slate-900 leading-relaxed whitespace-pre-wrap break-keep text-center">${(prob.directive || '').trim()}</h3>
                 </div>
                 
                 ${prob.propositions ? `<div
-                    class="p-5 bg-white rounded-xl border-2 border-slate-100 text-sm text-slate-800 leading-loose text-left whitespace-pre-wrap font-medium break-keep tracking-tight">
+                    class="p-5 bg-white rounded-xl border-2 border-slate-100 text-sm text-slate-800 leading-loose text-center whitespace-pre-wrap font-medium break-keep tracking-tight">
                     ${(prob.propositions || '').trim()}</div>` : ''}
                     
                 ${optionsHtml}
