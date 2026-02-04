@@ -27,3 +27,7 @@ client/android/local.properties
 client/ios/App/App.xcodeproj/project.xcworkspace/
 client/ios/App/App.xcodeproj/xcuserdata/
 client/ios/DerivedData/
+
+# Local Data
+users.db
+uploads/

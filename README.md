@@ -30,6 +30,8 @@ $env:GEMINI_API_KEY = "발급받은_API_키"
 *   `share.py`: 로컬 서버를 외부로 공유하는 터널링 스크립트입니다.
 *   `visualize_bboxes.py`: 추출된 문제 영역을 원본 이미지에 그려서 검증하는 도구입니다.
 *   `regenerate_crops.py`: 수동 수정된 JSON을 반영하여 이미지를 다시 자르는 도구입니다.
+*   `check_models.py`: 사용 가능한 Gemini 모델 목록을 확인하는 스크립트입니다.
+*   `check_gemini_vision.py`: Gemini Vision(멀티모달) API 연결 상태를 테스트하는 스크립트입니다.
 *   `utils.py`: 공통 유틸리티 모듈입니다.
 *   `output_extraction/`: 모든 결과물(이미지, JSON, 크롭 데이터)이 저장됩니다.
 
